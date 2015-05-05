@@ -1,0 +1,344 @@
+package com.app.jdy.activity;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+import android.app.TabActivity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.graphics.Bitmap;
+import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
+import android.view.KeyEvent;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewTreeObserver.OnPreDrawListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.RadioGroup.OnCheckedChangeListener;
+import android.widget.TabHost;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.app.jdy.R;
+import com.app.jdy.adapter.SearchListViewAdapter;
+import com.app.jdy.ui.LoginActivity;
+import com.app.jdy.utils.BitmapUtils;
+import com.app.jdy.utils.CommonUtils;
+import com.app.jdy.utils.UIUtils;
+import com.app.jdy.utils.URLs;
+import com.slidingmenu.lib.SlidingMenu;
+import com.umeng.message.PushAgent;
+import com.umeng.message.UmengRegistrar;
+
+/**
+ * 
+ * description :MainActivity
+ * 
+ * @version 1.0
+ * @author zhonghuixiong
+ * @createtime : 2015-3-14 上午12:13:15
+ * 
+ *             修改历史: 修改人 修改时间 修改内容 --------------- -------------------
+ *             ----------------------------------- zhonghuixiong 2015-3-14
+ *             上午12:13:15
+ * 
+ */
+@SuppressWarnings("deprecation")
+public class MainActivity extends TabActivity implements OnCheckedChangeListener {
+	private TabHost tabHost;
+	private RadioGroup radioderGroup;
+	private long mExitTime;
+	/**
+	 * 侧滑搜索相关
+	 */
+	private Context context;
+	private SlidingMenu menu;
+	private List<String> strs;
+	private SearchListViewAdapter searchListViewAdapter;
+	private ListView lv_search;
+	private Button btn_search;
+	private TextView tv_search;
+	private EditText edit_search;
+	private LinearLayout slidingMenuLayout;
+	private ResetMainPageBroadcastReceiver resetMainPageBroadcastReceiver;
+	private SlidingMenuToggleBroadcastReceiver slidingMenuToggleBroadcastReceiver;
+	private ClearKeywordEditTextBroadcastReceiver clearKeywordEditTextBroadcastReceiver;
+
+	RadioButton mainTabs_radio_home;
+	RadioButton mainTabs_radio_msg;
+	RadioButton mainTabs_radio_selfInfo;
+	
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		context = this;
+		//友盟推送初始化
+		PushAgent mPushAgent = PushAgent.getInstance(context);
+		mPushAgent.enable();
+		String device_token = UmengRegistrar.getRegistrationId(context);
+		System.out.println("+++++++++++++++++++++++++++++++++++++++"+device_token);
+		setContentView(R.layout.activity_tab);
+		tabHost = this.getTabHost();
+		tabHost.addTab(tabHost.newTabSpec("1").setIndicator("1").setContent(new Intent(this, HomeActivity.class)));
+		Intent goldActivityIntent = new Intent(this, GoldActivity.class);
+		goldActivityIntent.putExtra("flag", 0);
+		tabHost.addTab(tabHost.newTabSpec("2").setIndicator("2").setContent(goldActivityIntent));
+		tabHost.addTab(tabHost.newTabSpec("3").setIndicator("3").setContent(new Intent(this, MyActivity.class)));
+
+		radioderGroup = (RadioGroup) findViewById(R.id.main_radio);
+		radioderGroup.setOnCheckedChangeListener(this);
+		radioderGroup.check(R.id.mainTabs_radio_home);// 默认第一个按钮
+
+		mainTabs_radio_home = (RadioButton) findViewById(R.id.mainTabs_radio_home);
+		mainTabs_radio_msg = (RadioButton) findViewById(R.id.mainTabs_radio_msg);
+		mainTabs_radio_selfInfo = (RadioButton) findViewById(R.id.mainTabs_radio_selfInfo);
+
+		UIUtils.changeRadioButtonImageSize(mainTabs_radio_home, 1, 31, 31);
+		UIUtils.changeRadioButtonImageSize(mainTabs_radio_msg, 1, 31, 31);
+		UIUtils.changeRadioButtonImageSize(mainTabs_radio_selfInfo, 1, 31, 31);
+		/**
+		 * 侧滑搜索
+		 */
+		
+		menu = new SlidingMenu(this);
+		menu.setMode(SlidingMenu.RIGHT);
+		menu.setTouchModeAbove(SlidingMenu.TOUCHMODE_NONE);
+		menu.setShadowWidthRes(R.dimen.shadow_width);
+		menu.setBehindOffsetRes(R.dimen.slidingmenu_offset);
+		menu.setFadeDegree(0.35f);
+		menu.attachToActivity(this, SlidingMenu.SLIDING_CONTENT);
+		View view = LayoutInflater.from(this).inflate(R.layout.search_popuwindow, null);
+		edit_search = (EditText) view.findViewById(R.id.edit_search);
+		menu.setMenu(view);
+		slidingMenuToggleBroadcastReceiver = new SlidingMenuToggleBroadcastReceiver();
+		IntentFilter intentFilter1 = new IntentFilter("com.app.jdy.sender.SlidingMenuToggle_BroadCast");
+		resetMainPageBroadcastReceiver = new ResetMainPageBroadcastReceiver();
+		IntentFilter intentFilter2 = new IntentFilter("com.app.jdy.sender.ClearKeywordEditText_BroadCast");
+		clearKeywordEditTextBroadcastReceiver = new ClearKeywordEditTextBroadcastReceiver();
+		IntentFilter intentFilter5 = new IntentFilter("com.app.jdy.sender.ResetMainPage_BroadCast");
+		registerReceiver(slidingMenuToggleBroadcastReceiver, intentFilter1);
+		registerReceiver(clearKeywordEditTextBroadcastReceiver, intentFilter2);
+		registerReceiver(resetMainPageBroadcastReceiver, intentFilter5);
+
+		slidingMenuLayout = (LinearLayout) findViewById(R.id.slidingmenu);
+		final Bitmap bitmap = BitmapUtils.readBitMap(context, R.drawable.sliding_bg,
+				slidingMenuLayout.getMeasuredWidth(), slidingMenuLayout.getMeasuredHeight());
+		slidingMenuLayout.getViewTreeObserver().addOnPreDrawListener(new OnPreDrawListener() {
+			@Override
+			public boolean onPreDraw() {
+				slidingMenuLayout.getViewTreeObserver().removeOnPreDrawListener(this);
+				BitmapUtils.blur(bitmap, slidingMenuLayout);
+				return true;
+			}
+		});
+		initData();
+		lv_search = (ListView) view.findViewById(R.id.lv_search);
+		searchListViewAdapter = new SearchListViewAdapter(strs, MainActivity.this);
+		lv_search.setAdapter(searchListViewAdapter);
+		lv_search.setOnItemClickListener(new OnItemClickListener() {
+			public void onItemClick(AdapterView<?> arg0, View view, int position, long arg3) {
+				TextView tv = (TextView) view.findViewById(R.id.tv_search);
+				Intent intent = new Intent();
+				intent.setAction("org.jdy.action.LV_SEARCH_BROADCAST");
+				intent.putExtra("search_ProdType", CommonUtils.CodeForName(tv.getText().toString()));
+				intent.putExtra("reqFlag", 0);
+				sendBroadcast(intent);
+				menu.showContent();
+			};
+
+		});
+		edit_search.addTextChangedListener(new TextWatcher() {
+
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count) {
+				// searchListViewAdapter.getFilter().filter(s);
+			}
+
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+			}
+
+			@Override
+			public void afterTextChanged(Editable s) {
+
+			}
+		});
+		btn_search = (Button) view.findViewById(R.id.btn_search);
+		/**
+		 * 取消搜索按钮事件
+		 */
+		btn_search.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				CommonUtils.HideKeyBoard(MainActivity.this, edit_search);
+				Intent intent = new Intent();
+				intent.setAction("org.jdy.action.KEYWORD_SEARCH_BROADCAST");
+				intent.putExtra("search_keyWord", edit_search.getText().toString());
+				intent.putExtra("reqFlag", 0);
+				sendBroadcast(intent);
+				menu.showContent();
+			}
+		});
+	}
+
+	private void initData() {
+		strs = new ArrayList<String>();
+		strs.add("银行理财");
+		strs.add("保险理财");
+		strs.add("公募基金");
+		strs.add("信托理财");
+		strs.add("资管理财");
+		strs.add("债权众筹");
+		strs.add("股权众筹");
+		strs.add("私募基金");
+	}
+	
+	int pos = 1;
+
+	@Override
+	public void onCheckedChanged(RadioGroup group, int checkedId) {
+		switch (checkedId) {
+		case R.id.mainTabs_radio_home:
+			tabHost.setCurrentTabByTag("1");
+			pos = 1;
+			break;
+		case R.id.mainTabs_radio_msg:
+			tabHost.setCurrentTabByTag("2");
+			pos = 2;
+			break;
+		case R.id.mainTabs_radio_selfInfo:
+			if (CommonUtils.checkLogin(MainActivity.this) == true) {
+				tabHost.setCurrentTabByTag("3");
+			} else {
+				mainTabs_radio_selfInfo.setChecked(false);
+				if (pos == 1) {
+					mainTabs_radio_home.setChecked(true);
+				} else {
+					mainTabs_radio_msg.setChecked(true);
+				}
+				startActivity(new Intent(this, LoginActivity.class));
+			}
+			break;
+		}
+
+	}
+
+	/**
+	 * 
+	 * @author zhonghuixiong
+	 * @createtime 2015-2-7 下午5:48:27
+	 * @Decription 删除临时文件
+	 * 
+	 * @param filePath
+	 * @param deleteThisPath
+	 */
+	public void deleteFolderFile(String filePath, boolean deleteThisPath) {
+		if (!TextUtils.isEmpty(filePath)) {
+			try {
+				File file = new File(filePath);
+				if (file.isDirectory()) {// 处理目录
+					File files[] = file.listFiles();
+					for (int i = 0; i < files.length; i++) {
+						deleteFolderFile(files[i].getAbsolutePath(), true);
+					}
+				}
+				if (deleteThisPath) {
+					if (!file.isDirectory()) {// 如果是文件，删除
+						file.delete();
+					} else {// 目录
+						if (file.listFiles().length == 0) {// 目录下没有文件或者目录，删除
+							file.delete();
+						}
+					}
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	/**
+	 * 注册完成等操作后,返回主页面框架的第一页
+	 */
+	public class ResetMainPageBroadcastReceiver extends BroadcastReceiver {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			radioderGroup.check(R.id.mainTabs_radio_home);
+		}
+	}
+
+	public class SlidingMenuToggleBroadcastReceiver extends BroadcastReceiver {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			menu.showSecondaryMenu(true);
+		}
+	}
+
+	public class ClearKeywordEditTextBroadcastReceiver extends BroadcastReceiver {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			clearKeywordEditText();
+		}
+	}
+
+	@Override
+	public boolean dispatchKeyEvent(KeyEvent event) {
+		if (event.getKeyCode() == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN
+				&& event.getRepeatCount() == 0) {
+			if ((System.currentTimeMillis() - mExitTime) > 2000) {
+				Toast.makeText(this, "再按一次退出程序", Toast.LENGTH_SHORT).show();
+				mExitTime = System.currentTimeMillis();
+			} else {
+				deleteFolderFile(URLs.TEMP_DIR, true);
+				finish();
+			}
+			return true;
+		}
+		return super.dispatchKeyEvent(event);
+	}
+
+	@Override
+	protected void onDestroy() {
+		unregisterReceiver(slidingMenuToggleBroadcastReceiver);
+		unregisterReceiver(clearKeywordEditTextBroadcastReceiver);
+		unregisterReceiver(resetMainPageBroadcastReceiver);
+		super.onDestroy();
+	}
+
+	public void showMenu() {
+		menu.showMenu();
+	}
+
+	public void showContent() {
+		menu.showContent();
+	}
+
+	/**
+	 * 清除侧滑栏搜索框内容
+	 */
+	public void clearKeywordEditText() {
+		EditText et = (EditText) menu.getMenu().findViewById(R.id.edit_search);
+		et.setText("");
+	}
+
+	public void editTextSelectAll() {
+		EditText et = (EditText) menu.getMenu().findViewById(R.id.edit_search);
+		// et.selectAll();
+	}
+
+}

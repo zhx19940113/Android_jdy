@@ -1,0 +1,240 @@
+/**
+ * Copyright (c) 2015
+ *
+ * Licensed under the UCG License, Version 1.0 (the "License");
+ */
+package com.app.jdy.utils;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
+
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
+
+/**
+ * description :
+ * 
+ * @version 1.0
+ * @author Owater
+ * @createtime : 2015-1-31 下午5:52:47
+ * 
+ *             修改历史: 修改人 修改时间 修改内容 --------------- -------------------
+ *             ----------------------------------- Owater 2015-1-31 下午5:52:47
+ * 
+ */
+public class CommonUtils {
+
+	/**
+	 * 
+	 * @author Owater
+	 * @createtime 2015-1-14 上午9:23:21
+	 * @Decription 判断是否曾经登录过
+	 * 
+	 * @return
+	 */
+	public static boolean checkLogin(Context context) {
+		SharedPreferences userPreferences = context.getSharedPreferences("umeng_general_config", Context.MODE_PRIVATE);
+		String string = userPreferences.getString("jdycode", "");
+		if (string.length() > 10) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * 
+	 * @author Owater
+	 * @createtime 2015-1-14 上午10:14:21
+	 * @Decription 读取用户唯一登陆code
+	 * 
+	 * @return
+	 */
+	public static String getUserJdyCode(Context context) {
+		SharedPreferences userPreferences = context.getSharedPreferences("umeng_general_config", Context.MODE_PRIVATE);
+		String string = userPreferences.getString("jdycode", null);
+		return string;
+	}
+
+	/**
+	 * 
+	 * @author Owater
+	 * @createtime 2015-1-14 上午10:14:21
+	 * @Decription 读取用户ID
+	 * 
+	 * @return
+	 */
+	public static String getMemberID(Context context) {
+		SharedPreferences userPreferences = context.getSharedPreferences("umeng_general_config", Context.MODE_PRIVATE);
+		String string = userPreferences.getString("ID", null);
+		return string;
+	}
+
+	/**
+	 * 
+	 * @author zhonghuixiong
+	 * @createtime 2015-2-6 上午10:55:09
+	 * @Decription 比较版本号
+	 * 
+	 * @param versionString
+	 * @param tempVersionString
+	 * @return
+	 */
+	public static boolean CompareVersion(String versionString, String tempVersionString) {
+		StringBuffer versionStringBuffer = new StringBuffer();
+		String[] versionStringNames = versionString.split("\\.");
+		for (int i = 0; i < versionStringNames.length; i++) {
+			versionStringBuffer.append(versionStringNames[i]);
+			if (i == 0) {
+				versionStringBuffer.append(".");
+			}
+		}
+
+		StringBuffer tempVersionStringBuffer = new StringBuffer();
+		String[] tempVersionStringNames = tempVersionString.split("\\.");
+		for (int i = 0; i < versionStringNames.length; i++) {
+			tempVersionStringBuffer.append(tempVersionStringNames[i]);
+			if (i == 0) {
+				tempVersionStringBuffer.append(".");
+			}
+		}
+		return Double.parseDouble(versionStringBuffer.toString()) > Double.parseDouble(tempVersionStringBuffer
+				.toString());
+	};
+
+	/**
+	 * 
+	 * @author zhoufeng
+	 * @createtime 2015-3-14 上午11:08:10
+	 * @Decription 处理textview自动换行
+	 * 
+	 * @param input
+	 * @return
+	 */
+	public static String ToDBC(String input) {
+		char[] c = input.toCharArray();
+		for (int i = 0; i < c.length; i++) {
+			if (c[i] == 12288) {
+				c[i] = (char) 32;
+				continue;
+			}
+			if (c[i] > 65280 && c[i] < 65375)
+				c[i] = (char) (c[i] - 65248);
+		}
+		return new String(c);
+	}
+
+	// 替换、过滤特殊字符
+	public static String StringFilter(String str) throws PatternSyntaxException {
+		str = str.replaceAll("【", "[").replaceAll("】", "]").replaceAll("！", "!");// 替换中文标号
+		String regEx = "[『』]"; // 清除掉特殊字符
+		Pattern p = Pattern.compile(regEx);
+		Matcher m = p.matcher(str);
+		return m.replaceAll("").trim();
+	}
+
+	/**
+	 * 
+	 * @author zhoufeng
+	 * @createtime 2015-3-14 下午4:16:03
+	 * @Decription 讲null、空的json转化为指定的字符。
+	 * 
+	 * @param str
+	 * @param change
+	 * @return
+	 */
+	public static String changeNullToString(String str, String change) {
+		if (str.equals("null") || str.equals("") || str == null) {
+			str = change;
+		}
+		return str;
+	}
+
+	/**
+	 * 
+	 * @author zhoufeng
+	 * @createtime 2015-3-15 上午11:01:44
+	 * @Decription 根据code类型返回相对应的字符串
+	 * 
+	 * @param code
+	 *            产品code值
+	 * @return 相对应的产品中文类别
+	 */
+	public static String TypeforCode(String code) {
+		String str = "";
+		if (code.equals("bank")) {
+			str = "银行理财";
+		} else if (code.equals("insurance")) {
+			str = "保险理财";
+		} else if (code.equals("pubFunds")) {
+			str = "公募基金";
+		} else if (code.equals("trust")) {
+			str = "信托理财";
+		} else if (code.equals("captManage")) {
+			str = "资管理财";
+		} else if (code.equals("credit")) {
+			str = "债权众筹";
+		} else if (code.equals("equity")) {
+			str = "股权众筹";
+		} else if (code.equals("priFunds")) {
+			str = "私募基金";
+		}
+		return str;
+	}
+
+	/**
+	 * 
+	 * @author zhoufeng
+	 * @createtime 2015-3-15 下午2:18:51
+	 * @Decription 根据中文名称转化为相对应的code
+	 * 
+	 * @param name
+	 *            产品类别名称
+	 * @return 对应的code值
+	 */
+	public static String CodeForName(String name) {
+		String str = "";
+		if (name.equals("银行理财")) {
+			str = "bank";
+		} else if (name.equals("保险理财")) {
+			str = "insurance";
+		} else if (name.equals("公募基金")) {
+			str = "pubFunds";
+		} else if (name.equals("信托理财")) {
+			str = "trust";
+		} else if (name.equals("资管理财")) {
+			str = "captManage";
+		} else if (name.equals("债权众筹")) {
+			str = "credit";
+		} else if (name.equals("股权众筹")) {
+			str = "equity";
+		} else if (name.equals("私募基金")) {
+			str = "priFunds";
+		}
+		return str;
+	}
+
+	/**
+	 * 
+	 * @author zhonghuixiong
+	 * @createtime 2015-3-19 下午3:16:34
+	 * @Decription
+	 * 
+	 * @param type
+	 * @return
+	 */
+	public static void HideKeyBoard(Context context, EditText editText) {
+		InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+		imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);
+	}
+
+	public static String buildTransaction(final String type) {
+		return (type == null) ? String.valueOf(System.currentTimeMillis()) : type + System.currentTimeMillis();
+	}
+
+	public static int getIdFromStr(Context context, String idStr) {
+		return context.getResources().getIdentifier(idStr, "id", context.getPackageName());
+	}
+}

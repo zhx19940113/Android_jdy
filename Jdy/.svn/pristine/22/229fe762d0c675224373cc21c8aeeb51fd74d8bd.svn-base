@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/main_background" >
+
+    <include layout="@layout/title_bar" />
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical" >
+
+        <!-- <com.app.jdy.ui.SwipeDismissListView -->
+        <!-- android:id="@+id/all_bank_card" -->
+        <!-- android:layout_width="fill_parent" -->
+        <!-- android:layout_height="wrap_content" -->
+        <!-- android:divider="@null" > -->
+        <!-- </com.app.jdy.ui.SwipeDismissListView> -->
+
+        <com.app.jdy.widget.ListViewCompat
+            android:id="@+id/all_bank_card"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#fff4f7f9"
+            android:cacheColorHint="#00000000"
+            android:divider="#dddbdb"
+            android:dividerHeight="1dp"
+            android:drawSelectorOnTop="false"
+            android:listSelector="@android:color/transparent"
+            android:scrollbars="none" />
+    </LinearLayout>
+
+</LinearLayout>

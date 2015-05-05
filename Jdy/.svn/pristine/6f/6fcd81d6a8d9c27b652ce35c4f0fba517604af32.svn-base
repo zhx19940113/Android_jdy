@@ -1,0 +1,512 @@
+package com.app.jdy.activity;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.ScrollView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.app.jdy.R;
+import com.app.jdy.adapter.ImagePagerAdapter;
+import com.app.jdy.ui.BaseActivity;
+import com.app.jdy.ui.DetailProductActivity;
+import com.app.jdy.utils.BitmapUtils;
+import com.app.jdy.utils.CommonUtils;
+import com.app.jdy.utils.Constants;
+import com.app.jdy.utils.HttpUtils;
+import com.app.jdy.utils.JSONUtils;
+import com.app.jdy.utils.UIUtils;
+import com.app.jdy.utils.URLs;
+import com.app.jdy.widget.AutoScrollViewPager;
+import com.app.jdy.widget.DownAppDialog;
+import com.app.jdy.widget.WaitingDialog;
+import com.handmark.pulltorefresh.library.PullToRefreshBase;
+import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
+import com.handmark.pulltorefresh.library.PullToRefreshScrollView;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.tencent.mm.sdk.openapi.IWXAPI;
+import com.tencent.mm.sdk.openapi.WXAPIFactory;
+import com.umeng.analytics.MobclickAgent;
+
+/**
+ * 
+ * description :星品Activity
+ * 
+ * @version 1.0
+ * @author zhonghuixiong
+ * @createtime : 2015-3-14 上午12:13:52
+ * 
+ *             修改历史: 修改人 修改时间 修改内容 --------------- -------------------
+ *             ----------------------------------- zhonghuixiong 2015-3-14
+ *             上午12:13:52
+ * 
+ */
+public class HomeActivity extends BaseActivity implements OnClickListener {
+	private AutoScrollViewPager viewPager;
+	private List<View> dots; // 图片标题正文的那些点
+	private List<Bitmap> bitmapList;
+	private Bitmap tempBitmap;
+	private Handler mHandler = new Handler() {
+		public void handleMessage(Message msg) {
+			
+			switch (msg.what) {
+			case 0:
+				// 图片轮播，点击事件在ImagePagerAdapter里面
+				viewPager.setAdapter(new ImagePagerAdapter(HomeActivity.this,
+						bitmapList).setInfiniteLoop(true));
+				viewPager.setOnPageChangeListener(new MyOnPageChangeListener());
+				// 设置间隔时间
+				viewPager.setInterval(2000);
+				// 设置自动滚动
+				viewPager.startAutoScroll();
+				// 要无限循环必须使用Integer
+//				viewPager.setCurrentItem(Integer.MAX_VALUE / 2
+//						- Integer.MAX_VALUE / 2 % bitmapList.size());
+				break;
+			case 1:
+				Toast.makeText(HomeActivity.this, Constants.NO_INTENT_TIPS,
+						Toast.LENGTH_LONG).show();
+				WaitingDialog.dismissDialog();
+				break;
+			case 2:
+				setData();
+				WaitingDialog.dismissDialog();
+				break;
+			case 3:
+				if (CommonUtils
+						.CompareVersion(tempVersionString, versionString)) {
+					downAppDialog.setVersionDescrition(versionDescrition);
+					downAppDialog.showDownMessage();
+					isDown = true;
+				} else {
+					isDown = false;
+				}
+				break;
+			default:
+				break;
+			}
+			WaitingDialog.dismissDialog();
+		}
+	};
+	/**
+	 * 控制titleBar
+	 */
+	private TextView title_tv;
+	private ImageView back_img;
+	/**
+	 * 产品ID号
+	 */
+	private String id;
+	/**
+	 * 产品类型
+	 */
+	private String code;
+	/**
+	 * 产品名称
+	 */
+	private String name;
+	/**
+	 * 微信API
+	 */
+	private IWXAPI api;
+	private String shareSubject;
+	private String productSubject;
+	/**
+	 * 星品的数据
+	 */
+	private String dataJson;
+	/**
+	 * json对象
+	 */
+	private JSONObject jsonObject;;
+
+	private TextView super_name;
+	private TextView super_introduction;
+	private TextView super_expeAnnuRevnue;
+	private TextView super_issuer;
+	private Button super_buy;
+	private Button super_share;
+	private LinearLayout goto_detail_activity;
+
+	/**
+	 * 版本号
+	 */
+	private String versionString;
+	private String tempVersionString;
+	/**
+	 * 版本描述
+	 */
+	private String versionDescrition;
+	/**
+	 * 是否有更新标示
+	 */
+	private Boolean flagBoolean = false;
+	/**
+	 * 是否有新版本可以下载
+	 */
+	private Boolean isDown = false;
+
+	private RelativeLayout about_us;
+
+	private String versionJson;
+	private JSONObject versionJsonObject;
+
+	private DownAppDialog downAppDialog;
+	private String memberID;
+	private HomeActivity mContext;
+	
+	private PullToRefreshScrollView mPullRefreshScrollView;
+	private LinearLayout linearLayout_content;
+	private FrameLayout linearLayout_net_error;
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_home);
+		
+		setGuideResourceId(R.drawable.point_home);
+		initView();
+		initMainImage();
+		
+		super_buy.setOnClickListener(this);
+		super_share.setOnClickListener(this);
+		goto_detail_activity.setOnClickListener(this);
+		
+		linearLayout_content = (LinearLayout) findViewById(R.id.linearLayout_content);
+		linearLayout_net_error = (FrameLayout) findViewById(R.id.linearLayout_net_error);
+		
+		mPullRefreshScrollView = (PullToRefreshScrollView) findViewById(R.id.gold_pull_refresh_scrollview);
+		/**
+		 * 监听下拉刷新相关
+		 */
+		mPullRefreshScrollView.setOnRefreshListener(new OnRefreshListener<ScrollView>() {
+			@Override
+			public void onRefresh(PullToRefreshBase<ScrollView> refreshView) {
+				mPullRefreshScrollView.onRefreshComplete();
+				refreshData();
+				initMainImage();
+			}
+		});
+		
+		refreshData();
+	}
+	
+	private void refreshData() {
+		// 判断网络情况
+		if (HttpUtils.isNetworkConnected(mContext)) {
+			linearLayout_content.setVisibility(View.VISIBLE);
+			linearLayout_net_error.setVisibility(View.GONE);
+		} else {
+			//WaitingDialog.dismissDialog();
+			linearLayout_content.setVisibility(View.GONE);
+			linearLayout_net_error.setVisibility(View.VISIBLE);
+			return;
+		}
+
+		getData();// 获取服务端数据
+		versionString = getVersion();
+		checkNewVersion();
+	}
+
+	/**
+	 * 
+	 * @author zhoufeng
+	 * @createtime 2015-3-15 下午2:11:17
+	 * @Decription 初始化界面
+	 * 
+	 */
+	public void initView() {
+		mContext = this;
+		WaitingDialog.showDialog(HomeActivity.this);
+		downAppDialog = new DownAppDialog(this, R.style.ForwardDialog);
+
+		title_tv = (TextView) findViewById(R.id.title_tv);
+		back_img = (ImageView) findViewById(R.id.back_img);
+		super_name = (TextView) findViewById(R.id.super_name);
+		super_introduction = (TextView) findViewById(R.id.super_introduction);
+		super_expeAnnuRevnue = (TextView) findViewById(R.id.super_expeAnnuRevnue);
+		super_issuer = (TextView) findViewById(R.id.super_issuer);
+		super_buy = (Button) findViewById(R.id.super_buy);
+		super_share = (Button) findViewById(R.id.super_share);
+		goto_detail_activity = (LinearLayout) findViewById(R.id.goto_detail_activity);
+		api = WXAPIFactory.createWXAPI(this, Constants.APP_ID);
+		title_tv.setText(R.string.start_product);
+		back_img.setVisibility(View.INVISIBLE);
+		// 会员ID
+		memberID = CommonUtils.getMemberID(this);
+	}
+
+	/**
+	 * 
+	 * @author zhoufeng
+	 * @createtime 2015-3-15 下午2:11:30
+	 * @Decription 初始化首页图片轮播
+	 * 
+	 */
+	public void initMainImage() {
+		/**
+		 * 图片轮播
+		 */
+		dots = new ArrayList<View>();
+		dots.add(findViewById(R.id.v_dot0));
+		dots.add(findViewById(R.id.v_dot1));
+
+		viewPager = (AutoScrollViewPager) findViewById(R.id.home_view_pager);
+		bitmapList = new ArrayList<Bitmap>();
+		Thread thread = new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				bitmapList.add(ImageLoader.getInstance().loadImageSync(
+						URLs.DOWNBITMAP_URL + "1"));
+				bitmapList.add(ImageLoader.getInstance().loadImageSync(
+						URLs.DOWNBITMAP_URL + "2"));
+				// tempBitmap = BitmapUtils.getBitmap(URLs.DOWNBITMAP_URL + "1",
+				// URLs.TEMP_DIR + File.separator + "ad1.jpg",
+				// HomeActivity.this);
+				// tempBitmap = BitmapUtils.getBitmap(URLs.DOWNBITMAP_URL + "2",
+				// URLs.TEMP_DIR + File.separator + "ad2.jpg",
+				// HomeActivity.this);
+				mHandler.sendEmptyMessage(0);
+			}
+		});
+		thread.start();
+	}
+
+	/**
+	 * 
+	 * @author zhoufeng
+	 * @createtime 2015-3-15 下午2:11:52
+	 * @Decription 获取服务端数据
+	 * 
+	 */
+	public void getData() {
+		Thread thread = new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				Message msg = new Message();
+				dataJson = HttpUtils.request(null, URLs.SUPERPRODUCT);
+				if (HttpUtils.isReqSuccess(dataJson)) {
+					msg.what = 2;
+				} else {
+					msg.what = 1;
+				}
+				mHandler.sendMessage(msg);
+			}
+		});
+		thread.start();
+	}
+
+	/**
+	 * 
+	 * @author zhoufeng
+	 * @createtime 2015-3-15 下午2:12:03
+	 * @Decription 填充数据
+	 * 
+	 */
+	public void setData() {
+		try {
+			jsonObject = new JSONObject(dataJson);
+			super_name.setText(JSONUtils.getString(jsonObject, "name", ""));
+			super_introduction.setText(JSONUtils.getString(jsonObject,
+					"productSubject", ""));
+			// super_expeAnnuRevnue.setText(JSONUtils.getString(jsonObject,
+			// "expeAnnuRevnue", "0.00") + "%");
+			UIUtils.autoIncrement(super_expeAnnuRevnue, 0.00f, Float
+					.valueOf(JSONUtils.getString(jsonObject, "expeAnnuRevnue",
+							"0.00")), 2000, "%");
+			super_issuer.setText("本产品由"
+					+ JSONUtils.getString(jsonObject, "issuer",
+							Constants.NO_CONTENT_N) + "发行");
+			id = JSONUtils.getString(jsonObject, "ID", null);
+			code = JSONUtils.getString(jsonObject, "prodTypeCode", null);
+			name = JSONUtils.getString(jsonObject, "name", "未命名");
+			shareSubject = JSONUtils.getString(jsonObject, "shareSubject", "");
+			productSubject = JSONUtils.getString(jsonObject, "productSubject",
+					"");
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
+	@Override
+	public void onClick(View v) {
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("name", name);
+		map.put("ID", id);
+		map.put("prodTypeCode", code);
+		map.put("memberId", memberID);
+		map.put("shareSubject", shareSubject);
+		map.put("productSubject", productSubject);
+		switch (v.getId()) {
+		case R.id.super_share:
+			if (HttpUtils.isNetworkConnected(mContext)) {
+				UIUtils.shareProductDialog(mContext, map);
+				Map<String, String> eventMap = new HashMap<String, String>();
+				eventMap.put("memberId", CommonUtils.getMemberID(mContext));
+				MobclickAgent.onEvent(mContext, "shareToWechat", eventMap);
+			} else {
+				Toast.makeText(HomeActivity.this, Constants.NO_INTENT_TIPS,
+						Toast.LENGTH_SHORT).show();
+			}
+			break;
+		case R.id.super_buy:
+			if (HttpUtils.isNetworkConnected(mContext)) {
+				UIUtils.showCouponDialog(mContext, map);
+				Map<String,String> eventMap=new HashMap<String,String>();
+				eventMap.put("memberId", CommonUtils.getMemberID(mContext));
+				MobclickAgent.onEvent(mContext,"getCoupon", eventMap);
+			} else {
+				Toast.makeText(HomeActivity.this, Constants.NO_INTENT_TIPS,
+						Toast.LENGTH_SHORT).show();
+			}
+			break;
+		case R.id.goto_detail_activity:
+			if (HttpUtils.isNetworkConnected(HomeActivity.this) == true) {
+				Intent intent = new Intent(this, DetailProductActivity.class);
+				Bundle bundle = new Bundle();
+				bundle.putString("ID", id);
+				bundle.putString("name", name);
+				bundle.putString("prodTypeCode", code);
+				bundle.putString("productSubject", productSubject);
+				bundle.putString("shareSubject", shareSubject);
+				bundle.putString("imageString", CommonUtils.TypeforCode(code));
+				intent.putExtras(bundle);
+				startActivity(intent);
+			} else {
+				Toast.makeText(HomeActivity.this, Constants.NO_INTENT_TIPS,
+						Toast.LENGTH_SHORT).show();
+			}
+			break;
+		}
+	}
+
+	public class MyOnPageChangeListener implements OnPageChangeListener {
+		private int oldPosition = 0;
+
+		@Override
+		public void onPageSelected(int position) {
+			// 设置一个局部变量将 点和数量的值获取到
+			int realPostion = 0;
+			if (bitmapList.size() != 0) {
+				realPostion = position % bitmapList.size();
+			}
+			// tv_title.setText(titles[position]);
+			dots.get(oldPosition).setBackgroundResource(R.drawable.dot_normal);
+			dots.get(realPostion).setBackgroundResource(R.drawable.dot_focused);
+			oldPosition = realPostion;
+		}
+
+		@Override
+		public void onPageScrolled(int position, float positionOffset,
+				int positionOffsetPixels) {
+		}
+
+		@Override
+		public void onPageScrollStateChanged(int arg0) {
+		}
+	}
+
+	/**
+	 * 获取版本号
+	 * 
+	 * @return 当前应用的版本号
+	 */
+	public String getVersion() {
+		try {
+			PackageManager manager = getPackageManager();
+			PackageInfo info = manager.getPackageInfo(getPackageName(), 0);
+			String version = info.versionName;
+			return version;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "没有发现新版本";
+		}
+	}
+
+	/**
+	 * 检查更新
+	 */
+	public void checkNewVersion() {
+		Thread thread = new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				Message msg = new Message();
+				if (HttpUtils.isNetworkConnected(HomeActivity.this) == true) {
+					versionJson = HttpUtils
+							.request(null, URLs.GETNEWAPKVERSION);
+					if (versionJson.length() != 0
+							&& !versionJson.equals("0x110")) {
+						try {
+							versionJsonObject = new JSONObject(versionJson);
+							if (versionJsonObject.getString("versionNumber")
+									.equals("null")) {
+								tempVersionString = "0.0";
+							} else {
+								tempVersionString = versionJsonObject
+										.getString("versionNumber");
+							}
+							if (versionJsonObject
+									.getString("versionDescrition").equals(
+											"null")) {
+								versionDescrition = "";
+							} else {
+								versionDescrition = versionJsonObject
+										.getString("versionDescrition");
+							}
+							msg.what = 3;
+						} catch (Exception e) {
+							// TODO: handle exception
+						}
+
+					} else {
+						msg.what = 1;
+					}
+				} else {
+					msg.what = 1;
+				}
+				mHandler.sendMessage(msg);
+			}
+		});
+		thread.start();
+	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		MobclickAgent.onPageStart("SplashScreen"); 
+		MobclickAgent.onResume(this); 
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		MobclickAgent.onPageEnd("SplashScreen"); 
+		MobclickAgent.onPause(this);
+	}
+}

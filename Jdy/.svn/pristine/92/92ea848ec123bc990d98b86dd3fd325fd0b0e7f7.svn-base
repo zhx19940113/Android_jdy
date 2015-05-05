@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/actionbarLayoutId"
+    android:layout_width="match_parent"
+    android:layout_height="60dp"
+    android:background="@drawable/skinpic_blue" >
+
+    <LinearLayout
+        android:id="@+id/linearLayout1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:gravity="center|center_horizontal" >
+
+        <Button
+            android:id="@+id/myButton"
+            android:layout_width="90dp"
+            android:layout_height="40dp"
+            android:background="@drawable/button_shape5"
+            android:gravity="center"
+            android:text="我的产品"
+            android:textColor="#46ABFF"
+            android:textSize="15dp" />
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/follow_search_img"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="10dp"
+        android:background="@drawable/asearch" />
+
+    <ImageView
+        android:id="@+id/back_img"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="14dp"
+        android:src="@drawable/back_img" />
+
+</RelativeLayout>

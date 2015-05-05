@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res/com.app.jdy"
+    android:layout_width="fill_parent"
+    android:layout_height="match_parent"
+    android:background="#f2f2f2"
+    android:orientation="vertical" >
+
+    <include layout="@layout/title_bar" />
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="#d5dee5"
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/view_split" >
+
+        <RelativeLayout
+            android:id="@+id/change_username_click"
+            android:layout_width="fill_parent"
+            android:layout_height="@dimen/func_height"
+            android:layout_marginTop="@dimen/view_split"
+            android:background="@color/white"
+            android:paddingBottom="10dp"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:paddingTop="10dp" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="25dp"
+                android:text="用户名称"
+                android:textColor="@color/main_black" />
+
+            <TextView
+                android:id="@+id/setting_show_username"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="20dp"
+                android:text="啦啦啦"
+                android:textColor="#8b9ea7"
+                android:textSize="15dp" />
+
+            <ImageView
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:src="@drawable/gogo" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/change_password_click"
+            android:layout_width="fill_parent"
+            android:layout_height="@dimen/func_height"
+            android:layout_marginTop="@dimen/view_split"
+            android:background="@color/white"
+            android:paddingBottom="10dp"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:paddingTop="10dp" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="25dp"
+                android:text="修改密码"
+                android:textColor="@color/main_black" />
+
+            <ImageView
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:src="@drawable/gogo" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/about_us"
+            android:layout_width="fill_parent"
+            android:layout_height="@dimen/func_height"
+            android:layout_marginTop="@dimen/view_split"
+            android:background="@color/white"
+            android:paddingBottom="10dp"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:paddingTop="10dp" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="25dp"
+                android:text="关于我们"
+                android:textColor="@color/main_black" />
+
+            <ImageView
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:src="@drawable/gogo" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/show_guide_click"
+            android:layout_width="fill_parent"
+            android:layout_height="@dimen/func_height"
+            android:layout_marginTop="@dimen/view_split"
+            android:background="@color/white"
+            android:paddingBottom="10dp"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:paddingTop="10dp" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="25dp"
+                android:text="引导页"
+                android:textColor="@color/main_black" />
+
+            <ImageView
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:src="@drawable/gogo" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="@dimen/func_height"
+            android:layout_marginTop="@dimen/view_split"
+            android:background="@color/white"
+            android:paddingBottom="10dp"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:paddingTop="10dp" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="25dp"
+                android:text="广告推送"
+                android:textColor="@color/main_black" />
+
+            <ToggleButton
+                android:id="@+id/ad_push_ornot_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center_horizontal"
+                android:background="@android:color/transparent"
+                android:button="@drawable/ios7_btn"
+                android:checked="true"
+                android:text=""
+                android:textOff=""
+                android:textOn="" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/check_new_layout"
+            android:layout_width="fill_parent"
+            android:layout_height="@dimen/func_height"
+            android:layout_marginTop="@dimen/view_split"
+            android:background="@color/white"
+            android:paddingBottom="10dp"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:paddingTop="10dp" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="25dp"
+                android:text="检查更新"
+                android:textColor="@color/main_black"
+                android:textSize="15dp" >
+
+            </TextView>
+            
+            <ImageView
+                    android:id="@+id/check_new_image"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginRight="10dip"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:visibility="gone"
+                    android:background="@drawable/new_image"/>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="@dimen/func_height"
+            android:layout_marginTop="@dimen/view_split"
+            android:background="@color/white"
+            android:paddingBottom="10dp"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:paddingTop="10dp" >
+
+            <TextView
+                android:id="@+id/setting_loginout"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="25dp"
+                android:text="退出登录"
+                android:textColor="@color/red" />
+        </RelativeLayout>
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@id/my_content_view"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:descendantFocusability="blocksDescendants"
+    android:orientation="vertical" >
+
+    <include layout="@layout/title_bar" />
+
+    <com.handmark.pulltorefresh.library.PullToRefreshScrollView
+        xmlns:ptr="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/gold_pull_refresh_scrollview"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="@color/main_background"
+        ptr:ptrAnimationStyle="rotate"
+        ptr:ptrHeaderBackground="@color/main_background"
+        ptr:ptrHeaderTextColor="@color/main_light_black"
+        ptr:ptrListViewExtrasEnabled="true"
+        ptr:ptrMode="both"
+        ptr:ptrScrollingWhileRefreshingEnabled="true" >
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical" >
+
+            <LinearLayout
+                android:id="@+id/linearLayout_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:visibility="visible" >
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:paddingBottom="7dp" >
+
+                    <LinearLayout
+                        android:id="@+id/line_minSubsAmount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="#FFFFFF"
+                        android:gravity="center"
+                        android:orientation="vertical" >
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="#FFFFFF"
+                            android:orientation="horizontal"
+                            android:padding="8dp" >
+
+                            <TextView
+                                android:id="@+id/tx_minSubsAmount"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/minSubsAmount"
+                                android:textColor="@color/main_light_black"
+                                android:textSize="14sp" >
+                            </TextView>
+
+                            <ImageView
+                                android:id="@+id/img_minSubsAmount"
+                                android:layout_width="15dp"
+                                android:layout_height="15dp"
+                                android:layout_gravity="center"
+                                android:background="@drawable/up_arrow" />
+                        </LinearLayout>
+
+                        <View
+                            android:id="@+id/view_minSubsAmount"
+                            android:layout_width="90dp"
+                            android:layout_height="1dp"
+                            android:background="#46ABFF"
+                            android:visibility="invisible" >
+                        </View>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/line_expeAnnuRevnue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="#FFFFFF"
+                        android:gravity="center"
+                        android:orientation="vertical" >
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:padding="8dp" >
+
+                            <TextView
+                                android:id="@+id/tx_expeAnnuRevnue"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/expeAnnuRevnue"
+                                android:textColor="@color/main_light_black"
+                                android:textSize="14sp" >
+                            </TextView>
+
+                            <ImageView
+                                android:id="@+id/img_expeAnnuRevnue"
+                                android:layout_width="15dp"
+                                android:layout_height="15dp"
+                                android:layout_gravity="center"
+                                android:background="@drawable/up_arrow" />
+                        </LinearLayout>
+
+                        <View
+                            android:id="@+id/view_expeAnnuRevnue"
+                            android:layout_width="90dp"
+                            android:layout_height="1dp"
+                            android:background="#46ABFF"
+                            android:visibility="invisible" >
+                        </View>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/line_period"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="#FFFFFF"
+                        android:gravity="center"
+                        android:orientation="vertical" >
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:padding="8dp" >
+
+                            <TextView
+                                android:id="@+id/tx_period"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/period"
+                                android:textColor="@color/main_light_black"
+                                android:textSize="14sp" >
+                            </TextView>
+
+                            <ImageView
+                                android:id="@+id/img_period"
+                                android:layout_width="15dp"
+                                android:layout_height="15dp"
+                                android:layout_gravity="center"
+                                android:background="@drawable/up_arrow"
+                                android:textColor="@color/main_black" />
+                        </LinearLayout>
+
+                        <View
+                            android:id="@+id/view_period"
+                            android:layout_width="90dp"
+                            android:layout_height="1dp"
+                            android:background="#46ABFF"
+                            android:visibility="invisible" >
+                        </View>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <com.app.jdy.ui.MyListView
+                    android:id="@+id/gold_Listview"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:cacheColorHint="#00000000"
+                    android:divider="@color/main_background"
+                    android:dividerHeight="@dimen/item_split_margintop"
+                    android:fillViewport="true" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/linearLayout_net_error"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:visibility="gone" >
+
+                <LinearLayout
+                    android:id="@+id/imageLayout_net_error"
+                    android:layout_width="220dp"
+                    android:layout_height="220dp"
+                    android:layout_gravity="center"
+                    android:gravity="center" >
+
+                    <TextView
+                        android:id="@+id/textView_net_error"
+                        android:layout_width="170dp"
+                        android:layout_height="65dp"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="50dp"
+                        android:gravity="center"
+                        android:text="网络开小差了,请检查"
+                        android:textColor="@color/main_light_black" />
+                </LinearLayout>
+            </LinearLayout>
+        </FrameLayout>
+    </com.handmark.pulltorefresh.library.PullToRefreshScrollView>
+
+</LinearLayout>

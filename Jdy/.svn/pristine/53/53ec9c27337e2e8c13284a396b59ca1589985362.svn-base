@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/title_bar_style" >
+
+    <ImageView
+        android:id="@+id/back_img"
+        android:layout_width="@dimen/titlebar_icon"
+        android:layout_height="@dimen/titlebar_icon"
+        android:layout_centerVertical="true"
+        android:src="@drawable/back_img" />
+
+    <TextView
+        android:id="@+id/title_tv"
+        style="@style/title_text_style"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_centerVertical="true"
+        android:layout_centerInParent="true"
+        android:maxLength="10" />
+
+    <ImageView
+        android:id="@+id/share_img"
+        android:layout_width="@dimen/titlebar_icon"
+        android:layout_height="@dimen/titlebar_icon"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="40dp"
+        android:src="@drawable/bar_share"
+        android:visibility="gone" />
+
+    <ImageView
+        android:id="@+id/buy_img"
+        android:layout_width="@dimen/titlebar_icon"
+        android:layout_height="@dimen/titlebar_icon"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:src="@drawable/bar_buy"
+        android:visibility="gone" />
+
+</RelativeLayout>

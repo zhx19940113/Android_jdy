@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="button_shape2">#FFFFFF</color>
+    <color name="button_shape">#46ABFF</color>
+    <color name="app_bg">#eeeeee</color>
+    <color name="background_color">#fbfbfb</color>
+    <color name="title_text_color">#ffffff</color>
+    <color name="login">#3A6D9C</color>
+    <color name="detail_title">#130c0e</color>
+    <color name="detail_text">#4f5555</color>
+    <color name="detail_title_background">#F0F0F0</color>
+    <color name="my_text_color">#6F6F6F</color>
+    <color name="divider_color">#12D5EE</color>
+    <color name="detail_all_background_colcor">#d5dee5</color>
+    <color name="detail_item_another">#f3f5f9</color>
+    <color name="detail_item_text">#8b9ea7</color>
+    <!-- 透明色 -->
+    <color name="fuxk_settle_black_mark">#1A000000</color>
+    <color name="yellow">#46ABFF</color>
+    <color name="yin">#BCBBBB</color>
+    <!-- 分割线 -->
+    <color name="fuxk_base_divide_line_color">#dcdcdc</color>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="red">#f80303</color>
+    <color name="listTextColor">#333333</color>
+    <color name="listInfoColor">#525252</color>
+    <color name="activityBGColor">#FFFFFF</color>
+    <color name="processTextColor">#333333</color>
+    <color name="progressTitleColor">#ADADAD</color>
+    <color name="correctAnswerColor">#FF0000</color>
+    <color name="itemfocus">#c2c0bd</color>
+    <color name="itempress">#afafae</color>
+    <color name="deepGray">#878686</color>
+    <color name="listItemTagBGColor">#555555</color>
+    <color name="graywhite">#F5F5F5</color>
+    <color name="author_text">#0e5986</color>
+    <color name="bg_color_deep">#E5E5E5</color>
+    <!-- selected tab text -->
+    <color name="selected_tabtext">#bb000000</color>
+    <!-- non selected tab text -->
+    <color name="unselected_tabtext">#77000000</color>
+    <color name="transparent">#00000000</color>
+    <color name="listitem_transparent">#00000000</color>
+    <color name="listitem_black">#ff000000</color>
+    <color name="listitem_white">#ffffffff</color>
+    <color name="listitem_blue">#0e5986</color>
+    <color name="listitem_gray">#ff9da19e</color>
+    <color name="listitem_green">#ffe3ffc6</color>
+    <color name="listitem_greenyellow">#ff87b869</color>
+    <color name="listitem_yellow">#fffaffbf</color>
+    <color name="bright_foreground_light">#ff000000</color>
+    <color name="bright_foreground_light_inverse">#ffffffff</color>
+    <color name="bright_foreground_light_disabled">#80000000</color>
+    <color name="dim_foreground_light">#808080</color>
+    <color name="dim_foreground_light_disabled">#80323232</color>
+    <color name="dim_foreground_light_inverse">#ff006eaa</color>
+    <color name="dim_foreground_light_inverse_disabled">#80bebebe</color>
+    <color name="head_text">#0e5986</color>
+    <color name="frame_button_text_nor">#033a5c</color>
+    <color name="frame_button_text_select">#FFFFFF</color>
+    <color name="half_transparent">#aa000000</color>
+    <color name="transparent_black">#33000000</color>
+    <color name="blue">#d046abff</color>
+    <color name="me_background">#f2f2f2</color>
+    <color name="forward_btn_bg">#d9e4ec</color>
+    <color name="forward_text_color">#607078</color>
+    <color name="forward_dialog_divier">#d3dde2</color>
+    <color name="msglist_text_color">#607078</color>
+    <color name="forwddialog_text_color">#ed736d</color>
+    <color name="stackbar_fill1">#109bae</color>
+    <color name="bar_tooltip">#aa3302</color>
+    <color name="line_bg">#00bba7</color>
+    <color name="line_tooltip">#ffffff</color>
+    <color name="line_grid">#00a694</color>
+    <color name="msglist_callPhone_color">#5C5A5A</color>
+    <color name="dimgrey">#696969</color>
+    <color name="gray">#808080</color>
+    <color name="floralwhite">#FFFAF0</color>
+
+    <!-- 表单输入项提示hint -->
+    <color name="text_hint">#a0b5bf</color>
+    <!-- "我的"各功能分割横线颜色 -->
+    <color name="func_split">#d5dee5</color>
+    <!-- 标题栏蓝色,主色 -->
+    <color name="title">#46abff</color>
+    <!-- 各字体淡红色,主色 -->
+    <color name="main_red">#ed736d</color>
+    <!-- 各字体黑色,主色 -->
+    <color name="main_black">#3e484e</color>
+    <!-- 各字体淡黑色,主色 -->
+    <!-- <color name="main_light_black">#8b9ea7</color> -->
+    <color name="main_light_black">#a2a2a2</color>
+    <!-- app背景色,淡灰,主色 -->
+    <color name="main_background">#f2f2f2</color>
+    <!-- 验证码按钮置灰 -->
+    <color name="register_code_false">#fdc0bd</color>
+
+</resources>

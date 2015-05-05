@@ -1,0 +1,336 @@
+package com.app.jdy.ui;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
+
+import android.app.Activity;
+import android.app.DatePickerDialog;
+import android.app.DatePickerDialog.OnDateSetListener;
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.DatePicker;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.app.jdy.R;
+import com.app.jdy.utils.Base64Coder;
+import com.app.jdy.utils.URLs;
+import com.app.jdy.utils.UploadUtil;
+import com.app.jdy.utils.UploadUtil.OnUploadProcessListener;
+import com.umeng.analytics.MobclickAgent;
+
+/**
+ * 
+ * description :
+ * 
+ * @version 1.0
+ * @author zhonghuixiong
+ * @createtime : 2015-1-25 上午9:49:38
+ * 
+ * 
+ */
+public class OrderFeedBackActivity extends Activity implements OnClickListener, OnUploadProcessListener {
+	/******** 控件区域 ********/
+	private Button agreementUpload, sumbitFeedBack;
+	private ImageView back_img;
+	private DatePicker dp1;
+	private EditText et_order_amount, et_order_coupon, et_order_buyTime;
+	private ProgressDialog progressDialog;
+	private DatePickerDialog dpd;
+
+	/******** 状态码区域 ********/
+	private static final int GET_PICPATH = 1;// 获得本地图片路径
+
+	/**
+	 * 去上传文件
+	 */
+	protected static final int TO_UPLOAD_FILE = 1;
+	/**
+	 * 上传文件响应
+	 */
+	protected static final int UPLOAD_FILE_DONE = 2; //
+	/**
+	 * 选择文件
+	 */
+	public static final int TO_SELECT_PHOTO = 3;
+	/**
+	 * 上传初始化
+	 */
+	private static final int UPLOAD_INIT_PROCESS = 4;
+	/**
+	 * 上传中
+	 */
+	private static final int UPLOAD_IN_PROCESS = 5;
+
+	/******** 参数区域 ********/
+	private int year;
+	private int month;
+	private int day;
+	private String buyTime;
+
+	private String picPath;// 最终用于上传的文件路径
+
+	private static final String TAG = "OrderFeedBackActivity";
+
+	private Handler handler = new Handler() {
+		@Override
+		public void handleMessage(Message msg) {
+			switch (msg.what) {
+			case TO_UPLOAD_FILE:
+				toUploadFile();
+				break;
+			case UPLOAD_INIT_PROCESS:
+				// progressBar.setMax(msg.arg1);
+				// break;
+			case UPLOAD_IN_PROCESS:
+				// progressBar.setProgress(msg.arg1);
+				// break;
+			case UPLOAD_FILE_DONE:
+				if (msg.arg1 == UploadUtil.UPLOAD_SUCCESS_CODE) {
+					File f = new File(picPath);
+					if (f.exists()) {
+						f.delete();
+					}
+					finish();
+					Toast.makeText(getApplicationContext(), "反馈提交成功", Toast.LENGTH_LONG).show();
+				}
+				// else{
+				// Toast.makeText(getApplicationContext(), "合同文件上传出错",
+				// Toast.LENGTH_LONG).show();
+				// }
+				// String result = "响应码：" + msg.arg1 + "\n响应信息：" + msg.obj
+				// + "\n耗时：" + UploadUtil.getRequestTime() + "秒";
+				// uploadImageResult.setText(result);
+				break;
+			default:
+				break;
+			}
+			super.handleMessage(msg);
+		}
+	};
+	private TextView title_tv;
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.my_order_feedback);
+
+		initView();
+	}
+
+	/**
+	 * 初始化组件
+	 */
+	public void initView() {
+		et_order_coupon = (EditText) findViewById(R.id.et_order_coupon);
+		et_order_amount = (EditText) findViewById(R.id.et_order_amount);
+		et_order_buyTime = (EditText) findViewById(R.id.et_order_buyTime);
+		et_order_buyTime.setKeyListener(null);
+		et_order_buyTime.setOnClickListener(this);
+		agreementUpload = (Button) findViewById(R.id.agreementUpload);
+		sumbitFeedBack = (Button) findViewById(R.id.sumbitFeedBack);
+		// dp1 = (DatePicker) findViewById(R.id.dp1);
+		back_img = (ImageView) findViewById(R.id.back_img);
+		back_img.setVisibility(View.VISIBLE);
+		title_tv = (TextView) findViewById(R.id.title_tv);
+		title_tv.setText("反馈订单");
+		agreementUpload.setOnClickListener(this);
+		// agreementUpload.setBackgroundColor(getResources().getColor(
+		// R.color.white));
+		back_img.setOnClickListener(this);
+		sumbitFeedBack.setOnClickListener(this);
+		progressDialog = new ProgressDialog(this);
+		progressDialog.setCancelable(false);
+
+		Calendar mycalendar = Calendar.getInstance(Locale.CHINA);
+		Date mydate = new Date(); // 获取当前日期Date对象
+		mycalendar.setTime(mydate);// //为Calendar对象设置时间为当前日期
+
+		year = mycalendar.get(Calendar.YEAR); // 获取Calendar对象中的年
+		month = mycalendar.get(Calendar.MONTH);// 获取Calendar对象中的月
+		day = mycalendar.get(Calendar.DAY_OF_MONTH);// 获取这个月的第几天
+
+		dpd = new DatePickerDialog(this, new OnDateSetListener() {
+			@Override
+			public void onDateSet(DatePicker view, int myYear, int monthOfYear, int dayOfMonth) {
+				// TODO Auto-generated method stub
+				year = myYear;
+				month = monthOfYear;
+				day = dayOfMonth;
+				Calendar calendar = Calendar.getInstance(Locale.CHINA);
+				calendar.set(myYear, monthOfYear, dayOfMonth);
+
+				buyTime = new SimpleDateFormat("yyyy-MM-dd").format(calendar.getTime());
+				et_order_buyTime.setText(buyTime);
+			}
+		}, year, month, day);
+
+		// 只精确小数点后2位
+		et_order_amount.addTextChangedListener(new TextWatcher() {
+			@Override
+			public void afterTextChanged(Editable s) {
+				String temp = s.toString();
+				int d = temp.indexOf(".");
+				if (d < 0)
+					return;
+				if (temp.length() - d - 1 > 2) {
+					s.delete(d + 3, d + 4);
+				} else if (d == 0) {
+					s.delete(d, d + 1);
+				}
+			}
+
+			@Override
+			public void beforeTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
+
+			}
+
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+			}
+		});
+	}
+
+	@Override
+	public void onClick(View v) {
+		switch (v.getId()) {
+		case R.id.agreementUpload:
+			Intent intent = new Intent(this, SelectPicActivity.class);
+			intent.putExtra(SelectPicActivity.KEY_PHOTO_PATH, picPath);
+			startActivityForResult(intent, GET_PICPATH);
+			break;
+		case R.id.sumbitFeedBack:
+			// 正式调用上传逻辑
+			toUploadFile();
+			break;
+		case R.id.back_img:
+			finish();
+			break;
+		case R.id.et_order_buyTime:
+			dpd.show();
+			break;
+		default:
+			break;
+		}
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (resultCode == Activity.RESULT_OK) {
+			switch (requestCode) {
+			case GET_PICPATH:
+				picPath = data.getExtras().getString(SelectPicActivity.KEY_PHOTO_PATH);
+//				Log.i("OrderFeedBackActivity", picPath);
+				break;
+			default:
+				break;
+			}
+		}
+		super.onActivityResult(requestCode, resultCode, data);
+	}
+
+	private void toUploadFile() {
+		String coupon = et_order_coupon.getText().toString();
+		String buyMoney = et_order_amount.getText().toString();
+
+		// uploadImageResult.setText("正在上传中...");
+		progressDialog.setMessage("正在上传文件...");
+		progressDialog.show();
+		String fileKey = "contract";
+		UploadUtil uploadUtil = UploadUtil.getInstance();
+		uploadUtil.setOnUploadProcessListener(this); // 设置监听器监听上传状态
+
+		Map<String, String> params = new HashMap<String, String>();
+		SharedPreferences userPreferences = getSharedPreferences("umeng_general_config", Context.MODE_PRIVATE);
+		String memberId = userPreferences.getString("ID", "").trim();
+		params.put("memberId", memberId);
+		params.put("businessType", "OrderfbEntity");
+		params.put("coupon", coupon);
+		params.put("buyMoney", buyMoney);
+		params.put("buyTime", buyTime);
+		uploadUtil.uploadFile(picPath, fileKey, URLs.FEEDBACK_URL, params);
+	}
+
+	/**
+	 * 上传完成回调函数
+	 */
+	@Override
+	public void onUploadDone(int responseCode, String message) {
+		progressDialog.dismiss();
+		Message msg = Message.obtain();
+		msg.what = UPLOAD_FILE_DONE;
+		msg.arg1 = responseCode;
+		msg.obj = message;
+		handler.sendMessage(msg);
+	}
+
+	/**
+	 * 上传中监听函数
+	 */
+	@Override
+	public void onUploadProcess(int uploadSize) {
+		Message msg = Message.obtain();
+		msg.what = UPLOAD_IN_PROCESS;
+		msg.arg1 = uploadSize;
+		handler.sendMessage(msg);
+	}
+
+	/**
+	 * 开始上传初始化
+	 */
+	@Override
+	public void initUpload(int fileSize) {
+		Message msg = Message.obtain();
+		msg.what = UPLOAD_INIT_PROCESS;
+		msg.arg1 = fileSize;
+		handler.sendMessage(msg);
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		MobclickAgent.onPageStart("SplashScreen"); 
+		MobclickAgent.onResume(this); 
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		MobclickAgent.onPageEnd("SplashScreen"); 
+		MobclickAgent.onPause(this);
+	}
+}

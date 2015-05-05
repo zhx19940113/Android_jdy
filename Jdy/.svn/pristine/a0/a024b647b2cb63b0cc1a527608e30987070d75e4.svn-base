@@ -1,0 +1,47 @@
+package com.app.jdy.activity;
+
+import android.app.Activity;
+import android.os.Bundle;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.webkit.WebSettings;
+import android.webkit.WebSettings.LayoutAlgorithm;
+import android.webkit.WebView;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.app.jdy.R;
+
+public class PictureActivity extends Activity {
+	private WebView webView;
+	// 返回按钮
+	private ImageView back_img;
+	// title_bar标题
+	private TextView title_tv;
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_picture);
+		//加载webview
+		back_img = (ImageView) findViewById(R.id.back_img);
+		back_img.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				finish();
+			}
+		});
+		webView = (WebView) findViewById(R.id.picture_describe);
+		WebSettings settings = webView.getSettings();
+		settings.setSupportZoom(true);
+		settings.setLayoutAlgorithm(LayoutAlgorithm.NARROW_COLUMNS);
+		webView.setBackgroundColor(0);
+		// 加载URL
+		webView.loadUrl(getIntent().getExtras().getString("url"));
+		
+		//设置标题
+		title_tv = (TextView)findViewById(R.id.title_tv);
+		title_tv.setText("图片轮播详情");
+	}
+}

@@ -1,0 +1,130 @@
+package com.app.jdy.ui;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.app.jdy.R;
+import com.app.jdy.adapter.MyFragmentAdapter;
+
+/**
+ * 
+ * description :
+ * 
+ * @version 1.0
+ * @author zhonghuixiong
+ * @createtime : 2015-1-25 上午9:49:38
+ * 
+ *             修改历史: 修改人 修改时间 修改内容 --------------- -------------------
+ *             ----------------------------------- zhonghuixiong 2015-1-25
+ *             上午9:49:38
+ * 
+ */
+public class MainFragment extends Fragment {
+	protected static final int BACK_FROM_FOLLOW = 100;// 从我的产品页面返回
+	protected static final int BACK_FROM_LOGIN = 101;// 从登陆页面返回
+
+	private View view;
+	private ViewPager mViewPager;
+	private List<Fragment> mFragmentList;
+	private MyFragmentAdapter adapter;
+	private TextView title_tv;
+	private ImageView back_img, right_img;
+
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+		// TODO Auto-generated method stub
+		view = inflater.inflate(R.layout.activity_main, null);
+		initView();
+		return view;
+	}
+
+	public void initView() {
+		/**
+		 * 构造碎片数组
+		 */
+		mFragmentList = new ArrayList<Fragment>();
+		mFragmentList.add(new GoldFragment());
+
+		/**
+		 * 初始化控件
+		 */
+		mViewPager = (ViewPager) view.findViewById(R.id.pager);
+		adapter = new MyFragmentAdapter(getFragmentManager(), mFragmentList);
+		mViewPager.setAdapter(adapter);
+		title_tv = (TextView) view.findViewById(R.id.title_tv);
+		back_img = (ImageView) view.findViewById(R.id.back_img);
+		right_img = (ImageView) view.findViewById(R.id.right_img);
+		title_tv.setText("金矿");
+		back_img.setVisibility(View.INVISIBLE);
+		right_img.setImageResource(R.drawable.search);
+		right_img.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent();
+				intent.setAction("org.jdy.action.SlidingMenu_BROADCAST");
+				intent.putExtra("msg", "搜索列表广播");
+				getActivity().sendBroadcast(intent);
+				back_img.setVisibility(View.VISIBLE);
+			}
+		});
+		back_img.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent();
+				intent.setAction("org.jdy.action.BACK_SEARCH_BROADCAST");
+				getActivity().sendBroadcast(intent);
+				back_img.setVisibility(View.INVISIBLE);
+			}
+		});
+	}
+
+	/**
+	 * 
+	 * @author Owater
+	 * @createtime 2015-1-14 上午9:23:21
+	 * @Decription 判断是否曾经登录过
+	 * 
+	 * @return
+	 */
+	public boolean getUserInfo() {
+		SharedPreferences userPreferences = getActivity().getSharedPreferences(
+				"umeng_general_config", Context.MODE_PRIVATE);
+		String string = userPreferences.getString("jdycode", "");
+		if (string.length() > 10) {
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		switch (requestCode) {
+		case BACK_FROM_FOLLOW:
+			mViewPager.setCurrentItem(1);
+			break;
+		case BACK_FROM_LOGIN:
+			mViewPager.setCurrentItem(0);
+		default:
+			break;
+		}
+	}
+
+}

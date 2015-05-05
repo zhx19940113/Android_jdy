@@ -1,0 +1,181 @@
+package com.app.jdy.adapter;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import com.app.jdy.R;
+import com.app.jdy.entity.BankCard;
+import com.app.jdy.ui.BankCardActivity;
+import com.app.jdy.utils.Constants;
+import com.app.jdy.utils.HttpUtils;
+import com.app.jdy.utils.URLs;
+import com.app.jdy.widget.SlideView;
+import com.app.jdy.widget.SlideView.OnSlideListener;
+
+import android.content.Context;
+import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+public class BankAdapter extends BaseAdapter implements
+		OnSlideListener {
+	private static final String TAG = "SlideAdapter";
+
+	private Context mContext;
+	private LayoutInflater mInflater;
+
+	private List<BankCard> bankCardItem = new ArrayList<BankCard>();
+	private SlideView mLastSlideViewWithStatusOn;
+	/**
+	 * 产品详情的json数据
+	 */
+	private String dataJson;
+	/**
+	 * handler
+	 */
+	private Handler handler;
+	public BankAdapter(Context context) {
+		mContext = context;
+		mInflater = LayoutInflater.from(mContext);
+		
+		handler = new Handler() {
+			public void handleMessage(Message msg) {
+				Log.v("json数据", "=======" + dataJson);
+				switch (msg.what) {
+				case 0:
+					Toast.makeText(mContext, Constants.NO_INTENT_TIPS,
+							Toast.LENGTH_LONG).show();
+				case 1:
+					Toast.makeText(mContext, "删除成功", Toast.LENGTH_SHORT).show();
+					break;
+				default:
+					break;
+				}
+			}
+		};
+		
+	}
+
+	public void setmMessageItems(List<BankCard> bankCardItem) {
+		this.bankCardItem = bankCardItem;
+	}
+
+	@Override
+	public int getCount() {
+		if (bankCardItem == null) {
+			bankCardItem = new ArrayList<BankCard>();
+		}
+		return bankCardItem.size();
+	}
+
+	@Override
+	public Object getItem(int position) {
+		return bankCardItem.get(position);
+	}
+
+	@Override
+	public long getItemId(int position) {
+		return position;
+	}
+
+	@Override
+	public View getView(final int position, View convertView, ViewGroup parent) {
+		ViewHolder holder;
+		SlideView slideView = (SlideView) convertView;
+		if (slideView == null) {
+			View itemView = mInflater.inflate(R.layout.bank_item, null);
+
+			slideView = new SlideView(mContext);
+			slideView.setContentView(itemView);
+
+			holder = new ViewHolder(slideView);
+			slideView.setOnSlideListener(this);
+			slideView.setTag(holder);
+		} else {
+			holder = (ViewHolder) slideView.getTag();
+		}
+		final BankCard item = bankCardItem.get(position);
+		item.setSlideView(slideView);
+		item.getSlideView().shrink();
+
+		holder.type.setText(item.getBankName());
+		holder.menber.setText("尾号："+item.getBankCode().substring(
+				item.getBankCode().length() - 4, item.getBankCode().length()));
+		holder.username.setText("持卡人："+item.getAccountName());
+		holder.deleteHolder.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				removeBank(item.getID());
+				bankCardItem.remove(position);
+				notifyDataSetChanged();
+			}
+		});
+
+		return slideView;
+	}
+	
+	/**
+	 * 
+	 * @author zhoufeng
+	 * @createtime 2015-1-21 上午1:35:15
+	 * @Decription 删除银行卡的线程
+	 *
+	 * @param ID
+	 */
+	public void removeBank(final String ID){
+		Thread thread = new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				Message msg = new Message();
+				dataJson = HttpUtils.request(null, URLs.DELETE_BANK_CARD+ID);
+				if (dataJson.length() != 0 && !dataJson.equals("0x110")) {
+					msg.what = 1;
+				} else {
+					msg.what = 0;
+				}
+
+				handler.sendMessage(msg);
+			}
+		});
+		thread.start();
+	}
+
+	private static class ViewHolder {
+		public TextView type;
+		public TextView menber;
+		public TextView username;
+		public ViewGroup deleteHolder;
+
+		ViewHolder(View view) {
+			type = (TextView) view.findViewById(R.id.bank_type);
+			menber = (TextView) view.findViewById(R.id.bank_tail_menber);
+			username = (TextView) view.findViewById(R.id.bank_tail_username);
+			deleteHolder = (ViewGroup) view.findViewById(R.id.holder);
+		}
+	}
+
+	@Override
+	public void onSlide(View view, int status) {
+		if (mLastSlideViewWithStatusOn != null
+				&& mLastSlideViewWithStatusOn != view) {
+			mLastSlideViewWithStatusOn.shrink();
+		}
+
+		if (status == SLIDE_STATUS_ON) {
+			mLastSlideViewWithStatusOn = (SlideView) view;
+		}
+	}
+}

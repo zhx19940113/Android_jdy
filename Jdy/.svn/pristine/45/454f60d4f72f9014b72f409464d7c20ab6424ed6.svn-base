@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:drawable="@drawable/gold" android:state_checked="true"/>
+    <!-- not selected -->
+    <item android:drawable="@drawable/gold_select"/>
+
+</selector>

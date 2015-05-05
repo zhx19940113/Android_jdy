@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="#FFFFFF"
+    android:descendantFocusability="blocksDescendants"
+    android:orientation="vertical" >
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/view_split"
+        android:background="@color/func_split" >
+    </View>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:orientation="horizontal" >
+
+        <LinearLayout
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="3dp"
+            android:background="@drawable/type_template"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/type_textview"
+                android:layout_width="23dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="8dp"
+                android:text="银行理财"
+                android:textColor="#A9955A"
+                android:textSize="11dp" />
+        </LinearLayout>
+
+        <!-- <ImageView -->
+        <!-- android:id="@+id/imageView4" -->
+        <!-- android:layout_width="50dp" -->
+        <!-- android:layout_height="50dp" -->
+        <!-- android:layout_marginLeft="10dp" -->
+        <!-- android:layout_marginTop="3dp" -->
+        <!-- android:src="@drawable/temp" /> -->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginRight="10dp"
+            android:orientation="vertical" >
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="35dp" >
+
+                <TextView
+                    android:id="@+id/textView8"
+                    android:layout_width="wrap_content"
+                    android:layout_height="fill_parent"
+                    android:layout_marginLeft="5dp"
+                    android:gravity="center"
+                    android:singleLine="true"
+                    android:text="@string/protitle"
+                    android:textColor="@color/main_black"
+                    android:textSize="16sp" />
+
+                <!-- <RelativeLayout -->
+                <!-- android:layout_width="wrap_content" -->
+                <!-- android:layout_height="35dp" -->
+                <!-- android:layout_alignParentRight="true" -->
+                <!-- android:layout_marginLeft="3dp" > -->
+
+
+                <!-- <ImageView -->
+                <!-- android:id="@+id/imageView2" -->
+                <!-- android:layout_width="35dp" -->
+                <!-- android:layout_height="35dp" -->
+                <!-- android:layout_alignParentTop="true" -->
+                <!-- android:focusable="false" -->
+                <!-- android:src="@drawable/share" /> -->
+
+
+                <!-- <ImageView -->
+                <!-- android:id="@+id/imageView1" -->
+                <!-- android:layout_width="35dp" -->
+                <!-- android:layout_height="35dp" -->
+                <!-- android:layout_alignParentTop="true" -->
+                <!-- android:layout_marginLeft="3dp" -->
+                <!-- android:layout_toRightOf="@+id/imageView2" -->
+                <!-- android:focusable="false" -->
+                <!-- android:src="@drawable/buy" /> -->
+                <!-- </RelativeLayout> -->
+            </RelativeLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+
+                <TextView
+                    android:id="@+id/textView1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:singleLine="true"
+                    android:text="textView1"
+                    android:textColor="@color/main_light_black"
+                    android:textSize="@dimen/item_name" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="0.5dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:background="@color/func_split" >
+    </View>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp" >
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="33"
+            android:gravity="center"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxLength="8"
+                android:singleLine="true"
+                android:text="textView2"
+                android:textColor="@color/main_red"
+                android:textSize="@dimen/item_value" />
+
+            <TextView
+                android:id="@+id/textView5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/item_name_margintop"
+                android:singleLine="true"
+                android:text="textView5"
+                android:textColor="@color/main_light_black"
+                android:textSize="@dimen/item_name" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="0.5dp"
+            android:layout_height="match_parent"
+            android:background="@color/func_split" >
+        </View>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="33"
+            android:gravity="center"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxLength="8"
+                android:singleLine="true"
+                android:text="textView3"
+                android:textColor="@color/main_red"
+                android:textSize="@dimen/item_value" />
+
+            <TextView
+                android:id="@+id/textView6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/item_name_margintop"
+                android:singleLine="true"
+                android:text="textView6"
+                android:textColor="@color/main_light_black"
+                android:textSize="@dimen/item_name" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="0.5dp"
+            android:layout_height="match_parent"
+            android:background="@color/func_split" >
+        </View>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="34"
+            android:gravity="center"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/textView4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxLength="8"
+                android:singleLine="true"
+                android:text="textView4"
+                android:textColor="@color/main_red"
+                android:textSize="@dimen/item_value" />
+
+            <TextView
+                android:id="@+id/textView7"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/item_name_margintop"
+                android:singleLine="true"
+                android:text="textView7"
+                android:textColor="@color/main_light_black"
+                android:textSize="@dimen/item_name" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/view_split"
+        android:background="@color/func_split" >
+    </View>
+
+</LinearLayout>

@@ -1,0 +1,68 @@
+package com.app.jdy.ui;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import com.app.jdy.R;
+import com.app.jdy.adapter.DetailAdapter;
+import com.app.jdy.utils.HttpUtils;
+import com.app.jdy.utils.URLs;
+import com.app.jdy.widget.WaitingDialog;
+
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
+import android.widget.Toast;
+
+/**
+ * 
+ * description :
+ *
+ * @version 1.0
+ * @author zhoufeng
+ * @createtime : 2015-3-13 下午10:02:03
+ * 
+ * 修改历史:
+ * 修改人                                          修改时间                                                  修改内容
+ * --------------- ------------------- -----------------------------------
+ * zhoufeng        2015-3-13 下午10:02:03
+ *
+ */
+public class DetailProductActivity extends FragmentActivity{
+	private Handler handler;
+	private String dataJson;
+	/**
+	 * 产品类别
+	 */
+	private String code;
+	/**
+	 * 产品ID号
+	 */
+	private String id;
+	/**
+	 * 图标对应的文字
+	 */
+	private String imageString;
+	private FragmentTransaction fragmentTransaction = getSupportFragmentManager()
+			.beginTransaction();
+	
+	@Override
+	protected void onCreate(Bundle arg0) {
+		super.onCreate(arg0);
+		setContentView(R.layout.mymain);
+		id = getIntent().getExtras().getString("ID");
+		code=getIntent().getExtras().getString("prodTypeCode");
+		imageString = getIntent().getExtras().getString("imageString");
+		/**
+		 * 对产品类型进行判断，并对应加载不同产品的Fragment
+		 */
+		if (null != code) {//由于现在所有产品都是一个模板，所以不存在判断。
+			fragmentTransaction.replace(R.id.fragmentmain, new BankFragment(id,code,imageString));
+			fragmentTransaction.commit();
+		}
+	}
+	
+}

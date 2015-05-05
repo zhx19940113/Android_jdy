@@ -1,0 +1,546 @@
+package com.app.jdy.ui;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.ColorDrawable;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
+import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.View.OnLongClickListener;
+import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
+import android.webkit.WebSettings.LayoutAlgorithm;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.PopupWindow;
+import android.widget.PopupWindow.OnDismissListener;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.app.jdy.R;
+import com.app.jdy.activity.HomeActivity;
+import com.app.jdy.adapter.DetailAdapter;
+import com.app.jdy.adapter.MyFragmentAdapter;
+import com.app.jdy.adapter.SearchListViewAdapter;
+import com.app.jdy.utils.ChineseMoneyUtils;
+import com.app.jdy.utils.CommonUtils;
+import com.app.jdy.utils.Constants;
+import com.app.jdy.utils.DateUtils;
+import com.app.jdy.utils.HttpUtils;
+import com.app.jdy.utils.URLs;
+import com.app.jdy.utils.WxUtil;
+import com.app.jdy.widget.CustomForwardDialog;
+import com.app.jdy.widget.CustomSaveMoneyDialog;
+import com.app.jdy.widget.WaitingDialog;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.tencent.mm.sdk.openapi.IWXAPI;
+import com.tencent.mm.sdk.openapi.SendMessageToWX;
+import com.tencent.mm.sdk.openapi.WXAPIFactory;
+import com.tencent.mm.sdk.openapi.WXMediaMessage;
+import com.tencent.mm.sdk.openapi.WXWebpageObject;
+
+/**
+ * 
+ * description :
+ * 
+ * @version 1.0
+ * @author zhonghuixiong
+ * @createtime : 2015-1-25 上午9:49:38
+ * 
+ *             修改历史: 修改人 修改时间 修改内容 --------------- -------------------
+ *             ----------------------------------- zhonghuixiong 2015-1-25
+ *             上午9:49:38
+ * 
+ */
+public class BankFragment extends Fragment implements OnClickListener{
+
+	private View view;
+	private ImageView mBackImg;
+	private TextView title_tv;
+	private ImageView share_img;
+	private ImageView buy_img;
+	private TextView title;
+	private String id;//产品ID号
+	private String code;//产品类型
+	private String name;//产品名称
+	private String imageString;//图标对应的文字
+	
+	/**
+	 * 微信API
+	 */
+	private IWXAPI api;
+	private String shareSubject;
+	private String productSubject;
+	
+	private Handler handler;
+	private String dataJson;
+	private JSONObject jsonObject;
+	private JSONObject product;
+	private WebView webView;
+	private TextView detail_currencyTypeName;
+	private TextView detail_statusName;
+	private TextView detail_profitTypeName;
+	private TextView detail_period;
+	private TextView detail_ExpeAnnuRevnue;
+	private TextView detail_profit_time;
+	private TextView detail_sale_time;
+	private TextView detail_expeAnnuRevnue;
+	private Button change_money_click;
+	private EditText edit_money;
+	private TextView changed_money;
+	private TextView changed_money_yuan;
+	private ImageView product_logo;
+	private TextView image_text;
+
+	/**
+	 * 
+	 * 描述:构造函数
+	 * @param id 产品ID号
+	 * @param code 产品类型
+	 */
+	public BankFragment(String id,String code,String imageString){
+		this.id = id;
+		this.code = code;
+		this.imageString = imageString;
+	}
+	
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		// TODO Auto-generated method stub
+		view = inflater.inflate(R.layout.activity_bank_detail, null);
+		/**
+		 * 加载进度条
+		 */
+		WaitingDialog.showDialog(getActivity());
+		initView();//初始化组件
+		getDetailData();//获取服务端的数据
+		getWebviewData();//获取webview的数据
+		mBackImg.setOnClickListener(this);
+		share_img.setOnClickListener(this);
+		buy_img.setOnClickListener(this);
+		change_money_click.setOnClickListener(this);
+		
+		return view;
+	}
+	
+	public void initView(){
+		api = WXAPIFactory.createWXAPI(getActivity(), Constants.APP_ID);
+		mBackImg = (ImageView) view.findViewById(R.id.back_img);
+		mBackImg.setVisibility(View.VISIBLE);
+		title_tv = (TextView) view.findViewById(R.id.title_tv);
+		title_tv.setText("产品详情");
+		share_img = (ImageView) view.findViewById(R.id.share_img);
+		share_img.setVisibility(View.VISIBLE);
+		buy_img = (ImageView) view.findViewById(R.id.buy_img);
+		buy_img.setVisibility(View.VISIBLE);
+		image_text = (TextView) view.findViewById(R.id.imageString);
+		image_text.setText(imageString);
+		title = (TextView) view.findViewById(R.id.detail_title);
+		detail_currencyTypeName = (TextView) view.findViewById(R.id.detail_currencyTypeName);
+		detail_statusName = (TextView) view.findViewById(R.id.detail_statusName);
+		detail_profitTypeName = (TextView) view.findViewById(R.id.detail_profitTypeName);
+		detail_period = (TextView) view.findViewById(R.id.detail_period);
+		detail_ExpeAnnuRevnue = (TextView) view.findViewById(R.id.detail_ExpeAnnuRevnue);
+		detail_profit_time = (TextView) view.findViewById(R.id.detail_profit_time);
+		detail_sale_time =(TextView) view.findViewById(R.id.detail_sale_time);
+		detail_expeAnnuRevnue = (TextView) view.findViewById(R.id.detail_expeAnnuRevnue);
+		change_money_click = (Button) view.findViewById(R.id.change_money_click);
+		edit_money = (EditText) view.findViewById(R.id.edit_money);
+		changed_money = (TextView) view.findViewById(R.id.changed_money);
+		changed_money_yuan = (TextView) view.findViewById(R.id.changed_money_yuan);
+		product_logo = (ImageView) view.findViewById(R.id.product_logo);
+		webView = (WebView) view.findViewById(R.id.detail_webview);
+		/**
+		 * 设置虚线
+		 */
+		view.findViewById(R.id.stroke).setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+		view.findViewById(R.id.stroke1).setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+		view.findViewById(R.id.stroke2).setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+		
+		handler = new Handler() {
+			public void handleMessage(Message msg) {
+				Log.i("===", dataJson.toString());
+				switch (msg.what) {
+				
+				case 0:
+					Toast.makeText(getActivity(), Constants.NO_INTENT_TIPS,
+							Toast.LENGTH_LONG).show();
+					WaitingDialog.dismissDialog();
+					break;
+				case 1:
+					setDetailData();
+					WaitingDialog.dismissDialog();
+					break;
+				default:
+					break;
+				}
+			}
+		};
+	}
+	/**
+	 * 
+	 * @author zhoufeng
+	 * @createtime 2015-3-14 下午3:17:56
+	 * @Decription 获取详情列表的数据
+	 *
+	 */
+	public void getDetailData() {
+		Thread thread = new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				Message msg = new Message();
+				if (HttpUtils.isNetworkConnected(getActivity()) == true) {
+					dataJson = HttpUtils.request(null, URLs.PROUDCT_DETAIL + id + "-" + code);
+					if (dataJson.length() != 0 && !dataJson.equals("0x110")) {
+						try {
+							jsonObject = new JSONObject(dataJson);
+						} catch (JSONException e) {
+							e.printStackTrace();
+						}
+						msg.what = 1;
+					}else{
+						msg.what = 0;
+					}
+					
+				}else{
+					msg.what=0;
+				}
+				handler.sendMessage(msg);
+			}
+		});
+		thread.start();
+	}
+	
+	/**
+	 * 
+	 * @author zhoufeng
+	 * @createtime 2015-3-14 下午3:17:42
+	 * @Decription 获取详情webview数据
+	 *
+	 */
+	public void getWebviewData(){
+		WebSettings settings = webView.getSettings(); 
+		settings.setSupportZoom(true);
+		settings.setLayoutAlgorithm(LayoutAlgorithm.NARROW_COLUMNS);
+		webView.loadUrl(URLs.PROUDCT_DETAIL_WEBVIEW + id);
+		
+		webView.setWebViewClient(new WebViewClient() {
+
+			// return true才能让Webview里面的链接不去调用浏览器
+			@Override
+			public boolean shouldOverrideUrlLoading(WebView view, String url) {
+				view.loadUrl(url);
+				return false;
+			}
+		});
+		webView.setOnLongClickListener(new OnLongClickListener() {
+
+			@Override
+			public boolean onLongClick(View v) {
+				return true;
+			}
+		});
+	}
+
+	@Override
+	public void onClick(View v) {
+		switch (v.getId()) {
+		case R.id.back_img:
+			getActivity().finish();
+			break;
+		case R.id.change_money_click:
+			try {
+				BigDecimal b1 = new BigDecimal(edit_money.getText().toString());
+				BigDecimal b2 = new BigDecimal(
+						product.getDouble("expeAnnuRevnue"));
+				BigDecimal b3 = b1.multiply(b2);
+				Double result = b3
+						.divide(new BigDecimal(100), 2, BigDecimal.ROUND_DOWN).doubleValue();
+				changed_money.setText(ChineseMoneyUtils
+						.numWithDigitArray(result)[0]);
+				changed_money_yuan.setText(ChineseMoneyUtils
+						.numWithDigitArray(result)[1]);
+			} catch (NumberFormatException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+		case R.id.buy_img:
+			showBuyDialog();
+			break;
+		case R.id.share_img:
+			shareDetail();
+			break;
+		default:
+			break;
+		}
+	}
+	
+	/**
+	 * 
+	 * @author zhoufeng
+	 * @throws JSONException 
+	 * @createtime 2015-3-13 下午11:04:09
+	 * @Decription 填充数据
+	 *
+	 */
+	public void setDetailData(){
+		
+		try {
+			product = new JSONObject(jsonObject.getString("product1"));
+			name = CommonUtils.changeNullToString(CommonUtils.ToDBC(CommonUtils.StringFilter(product
+					.getString("name"))), "未命名");
+			title.setText(name);
+			detail_currencyTypeName.setText(CommonUtils.changeNullToString(product.getString("currencyTypeName"),"--"));
+			detail_statusName.setText(CommonUtils.changeNullToString(product.getString("statusName"),"--"));
+			detail_profitTypeName.setText(CommonUtils.changeNullToString(product.getString("profitTypeName"),"--"));
+			if(CommonUtils.changeNullToString(product.getString("period"),null)==null){
+				detail_period.setText("--");
+			}else{
+				detail_period.setText(DateUtils.parseDayToStr(product.getInt("period")));
+			}
+			 
+			if (CommonUtils.changeNullToString(product.getString("expeAnnuRevnue"),null) == null) {
+				detail_ExpeAnnuRevnue.setText(CommonUtils.changeNullToString(product.getString("expeAnnuRevnue"),"--"));
+			}else{
+				detail_ExpeAnnuRevnue.setText(ChineseMoneyUtils
+						.numWithDigitArray(product.getDouble("expeAnnuRevnue"))[0]
+						+ ChineseMoneyUtils.numWithDigitArray(product
+								.getDouble("expeAnnuRevnue"))[1]);
+				
+			}
+			final String[] urls = { URLs.HTTP + URLs.HOST
+					+ product.getString("issuerLogo") };
+			if (product.getString("issuerLogo").equals("null")||product.getString("issuerLogo").equals("")) {
+				product_logo.setVisibility(View.GONE);
+			}else{
+				product_logo.setVisibility(View.VISIBLE);
+				ImageLoader.getInstance().displayImage(urls[0], product_logo);
+				product_logo.setOnClickListener(new OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						imageBrower(0, urls);
+					}
+				});
+			}
+			
+			
+			String profitStart,profitEnd,saleStart,saleEnd;
+			if (product.getString("profitStart").equals("null")) {
+				profitStart = "--";
+			}else{
+				profitStart = product.getString("profitStart");
+			}
+			if (product.getString("profitEnd").equals("null")) {
+				profitEnd = "--";
+			}else{
+				profitEnd = product.getString("profitEnd");
+			}
+			if (product.getString("saleStart").equals("null")) {
+				saleStart = "--";
+			}else{
+				saleStart = product.getString("saleStart");
+			}
+			if (product.getString("saleEnd").equals("null")) {
+				saleEnd = "--";
+			}else{
+				saleEnd = product.getString("saleEnd");
+			}
+			detail_profit_time.setText(profitStart+" ~ "+profitEnd);
+			detail_sale_time.setText(saleStart+" ~ "+saleEnd);
+			detail_expeAnnuRevnue.setText(CommonUtils.changeNullToString(product.getString("expeAnnuRevnue"),"0.00")+"%");
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+	}
+	private void imageBrower(int position, String[] urls) {
+		Intent intent = new Intent(getActivity(), ImagePagerActivity.class);
+		// 图片url,为了演示这里使用常量，一般从数据库中或网络中获取
+		intent.putExtra(ImagePagerActivity.EXTRA_IMAGE_URLS, urls);
+		intent.putExtra(ImagePagerActivity.EXTRA_IMAGE_INDEX, position);
+		getActivity().startActivity(intent);
+	}
+	
+	
+	/**
+	 * 
+	 * @author zhoufeng
+	 * @createtime 2015-3-14 下午11:01:22
+	 * @Decription 弹出省钱对话框
+	 *
+	 */
+	private void showBuyDialog() {
+		if (CommonUtils.checkLogin(getActivity())) {
+			SharedPreferences userPreferences = getActivity().getSharedPreferences("umeng_general_config", Context.MODE_PRIVATE);
+			String memberID = userPreferences.getString("ID", "").trim();
+			Map<String, String> map = new HashMap<String, String>();
+			map.put("ID", id);
+			map.put("memberId", memberID);
+			CustomSaveMoneyDialog customSaveMoneyDialog = new CustomSaveMoneyDialog(getActivity(), R.style.ForwardDialog, map);
+			customSaveMoneyDialog.show();
+		} else {
+			startActivity(new Intent(getActivity(), LoginActivity.class));
+		}
+	}
+	
+
+	/**
+	 * 
+	 * @author zhoufeng
+	 * @createtime 2015-3-14 下午11:09:58
+	 * @Decription 微信发送
+	 *
+	 * @param rid
+	 */
+	private void sendUrl(String rid) {
+		WXWebpageObject webpage = new WXWebpageObject();
+		webpage.webpageUrl = URLs.WX_SHARE_RESULT_URL + "/" + id + "-" + code + "-" + rid;
+		// Log.i("url", URLs.WX_SHARE_RESULT_URL+"/"+id+"-"+code+"-"+rid);
+//		Toast.makeText(getActivity(), URLs.WX_SHARE_RESULT_URL + "/" + id + "-" + code + "-" + rid,
+//				Toast.LENGTH_LONG).show();
+		WXMediaMessage msg = new WXMediaMessage(webpage);
+		msg.title = name;
+		msg.description = "产品描述";
+		Bitmap thumb = BitmapFactory.decodeResource(getResources(), R.drawable.test2);
+		msg.thumbData = WxUtil.bmpToByteArray(thumb, true);
+
+		SendMessageToWX.Req req = new SendMessageToWX.Req();
+		req.transaction = buildTransaction("webpage");
+		req.message = msg;
+		// req.scene = isTimelineCb.isChecked() ?
+		// SendMessageToWX.Req.WXSceneTimeline :
+		// SendMessageToWX.Req.WXSceneSession;
+		req.scene = SendMessageToWX.Req.WXSceneTimeline;
+		api.sendReq(req);
+	}
+	
+
+	private String buildTransaction(final String type) {
+		return (type == null) ? String.valueOf(System.currentTimeMillis()) : type + System.currentTimeMillis();
+	}
+	/**
+	 * 
+	 * @author zhoufeng
+	 * @createtime 2015-1-22 上午1:59:43
+	 * @Decription 获取用户的memberId，产品的code和产品的ID号进行分享
+	 * 
+	 */
+	public void shareDetail() {
+		SharedPreferences userPreferences = getActivity().getSharedPreferences("umeng_general_config", Context.MODE_PRIVATE);
+		String jdycode = userPreferences.getString("jdycode", null);
+		// 进行判断用户是否已经登录，没登陆返回登录界面，有登陆可以操作分享的功能
+
+		if (jdycode != null) {
+			String memberID = userPreferences.getString("ID", "").trim();
+			// memberID : 用户的memberId;
+			// code 产品的code
+			// id 产品的ID号
+			new MyAsyncTask(id, memberID, code).execute();
+			Map<String, String> map = new HashMap<String, String>();
+			map.put("name", "test");
+			map.put("ID", id);
+			map.put("prodTypeCode", code);
+			map.put("memberId", memberID);
+			map.put("shareSubject", shareSubject);
+			map.put("productSubject", productSubject);
+			CustomForwardDialog customForwardDialog = new CustomForwardDialog(getActivity(), R.style.ForwardDialog, map, false);
+			customForwardDialog.show();
+		} else {
+			startActivity(new Intent(getActivity(), LoginActivity.class));
+		}
+
+	}
+	
+	/**
+	 * 
+	 * description : 异步网络请求
+	 * 
+	 * @version 1.0
+	 * @author Owater
+	 * @createtime : 2015-1-20 上午4:22:27
+	 * 
+	 *             修改历史: 修改人 修改时间 修改内容 --------------- -------------------
+	 *             ----------------------------------- Owater 2015-1-20
+	 *             上午4:22:27
+	 * 
+	 */
+	private class MyAsyncTask extends AsyncTask<Void, Integer, Boolean> {
+
+		private ArrayList<NameValuePair> params;
+		private String resultid;
+		private String memberId;// 会员ID
+		private String productId;// 产品ID
+		private String type;// 产品类型
+
+		public MyAsyncTask(String productId, String memberId, String type) {
+			this.memberId = memberId;
+			this.type = type;
+			this.productId = productId;
+		}
+
+		@Override
+		protected Boolean doInBackground(Void... arg0) {
+			params = new ArrayList<NameValuePair>();
+			params.add(new BasicNameValuePair("parentId", ""));
+			params.add(new BasicNameValuePair("productId", productId));
+			params.add(new BasicNameValuePair("memberId", memberId));
+			resultid = HttpUtils.request(params, URLs.WX_SHARE_URL);
+			try {
+				JSONObject jsonObject = new JSONObject(resultid);
+				resultid = jsonObject.getString("ID");
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return true;
+		}
+
+		@Override
+		protected void onPostExecute(Boolean result) {
+			if (result) {
+//				Toast.makeText(getActivity(), "resultid=" + resultid, Toast.LENGTH_LONG).show();
+				sendUrl(resultid);
+			} else {
+				// Toast.makeText(HomeActivity.this, "网络请求失败",
+				// Toast.LENGTH_SHORT).show();
+			}
+		}
+
+	}
+}

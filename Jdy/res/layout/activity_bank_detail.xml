@@ -1,0 +1,554 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/white"
+    android:orientation="vertical" >
+
+    <ScrollView
+        android:id="@+id/product_detail_srollview"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" >
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:background="@color/main_background"
+            android:orientation="vertical" >
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:background="@color/white"
+                android:orientation="vertical" >
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/white"
+                    android:padding="15dp" >
+
+                    <LinearLayout
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_marginTop="3dp"
+                        android:background="@drawable/type_template"
+                        android:orientation="vertical" >
+
+                        <TextView
+                            android:id="@+id/imageString"
+                            android:layout_width="24dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginTop="7dp"
+                            android:text="银行理财"
+                            android:textColor="#A9955A"
+                            android:textSize="12dp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="10dp"
+                        android:layout_weight="1"
+                        android:gravity="center_vertical"
+                        android:orientation="vertical" >
+
+                        <TextView
+                            android:id="@+id/detail_title"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:gravity="center_vertical"
+                            android:singleLine="true"
+                            android:textColor="@color/main_black" />
+
+                        <TextView
+                            android:id="@+id/detail_product_subject"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:gravity="center_vertical"
+                            android:singleLine="true"
+                            android:textColor="@color/main_light_black"
+                            android:textSize="@dimen/item_name" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/stroke1"
+                    android:layout_width="fill_parent"
+                    android:layout_height="2dp"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    android:background="@drawable/stroke"
+                    android:orientation="horizontal" />
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/white"
+                    android:orientation="horizontal"
+                    android:padding="15dp" >
+
+                    <RelativeLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="5"
+                        android:orientation="vertical" >
+
+                        <TextView
+                            android:id="@+id/expeAnnuRevnue_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/expeAnnuRevnue_text"
+                            android:textColor="@color/main_light_black"
+                            android:textSize="@dimen/product_detail_item" />
+
+                        <TextView
+                            android:id="@+id/detail_expeAnnuRevnue"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentRight="true"
+                            android:layout_below="@+id/expeAnnuRevnue_text"
+                            android:text="@string/expeAnnuRevnue_data"
+                            android:textColor="@color/main_red"
+                            android:textSize="60sp" />
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="3"
+                        android:gravity="center" >
+
+                        <ImageView
+                            android:id="@+id/issuerLogo"
+                            android:layout_width="70dp"
+                            android:layout_height="70dp"
+                            android:visibility="invisible" />
+                    </RelativeLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/white"
+                    android:orientation="horizontal"
+                    android:paddingLeft="15dp"
+                    android:paddingRight="15dp" >
+
+                    <RelativeLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="horizontal" >
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentLeft="true"
+                            android:text="@string/period"
+                            android:textColor="@color/main_light_black"
+                            android:textSize="@dimen/product_detail_item" />
+
+                        <TextView
+                            android:id="@+id/detail_period"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentRight="true"
+                            android:layout_marginRight="15dp"
+                            android:textColor="@color/main_black"
+                            android:textSize="@dimen/product_detail_item" />
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="horizontal" >
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentLeft="true"
+                            android:text="@string/minSubsAmount"
+                            android:textColor="@color/main_light_black"
+                            android:textSize="@dimen/product_detail_item" />
+
+                        <TextView
+                            android:id="@+id/detail_minSubsAmount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentRight="true"
+                            android:textColor="@color/main_black"
+                            android:textSize="@dimen/product_detail_item" />
+                    </RelativeLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/white"
+                    android:orientation="horizontal"
+                    android:paddingBottom="15dp"
+                    android:paddingLeft="15dp"
+                    android:paddingRight="15dp"
+                    android:paddingTop="5dp" >
+
+                    <RelativeLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="horizontal" >
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentLeft="true"
+                            android:text="@string/profitTypeName"
+                            android:textColor="@color/main_light_black"
+                            android:textSize="@dimen/product_detail_item" />
+
+                        <TextView
+                            android:id="@+id/detail_profitTypeName"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentRight="true"
+                            android:layout_marginRight="15dp"
+                            android:textColor="@color/main_black"
+                            android:textSize="@dimen/product_detail_item" />
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="horizontal" >
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentLeft="true"
+                            android:text="@string/statusName"
+                            android:textColor="@color/main_light_black"
+                            android:textSize="@dimen/product_detail_item" />
+
+                        <TextView
+                            android:id="@+id/detail_statusName"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentRight="true"
+                            android:textColor="@color/main_black"
+                            android:textSize="@dimen/product_detail_item" />
+                    </RelativeLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/stroke"
+                    android:layout_width="fill_parent"
+                    android:layout_height="2dp"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    android:background="@drawable/stroke"
+                    android:orientation="horizontal" />
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/white"
+                    android:orientation="horizontal"
+                    android:paddingLeft="15dp"
+                    android:paddingRight="15dp"
+                    android:paddingTop="15dp" >
+
+                    <!-- <RelativeLayout -->
+                    <!-- android:layout_width="fill_parent" -->
+                    <!-- android:layout_height="wrap_content" -->
+                    <!-- android:layout_weight="1" -->
+                    <!-- android:orientation="horizontal" > -->
+
+
+                    <!-- <TextView -->
+                    <!-- android:layout_width="wrap_content" -->
+                    <!-- android:layout_height="wrap_content" -->
+                    <!-- android:layout_alignParentLeft="true" -->
+                    <!-- android:text="币种 " -->
+                    <!-- android:textColor="@color/main_light_black" -->
+                    <!-- android:textSize="13sp" /> -->
+
+
+                    <!-- <TextView -->
+                    <!-- android:id="@+id/detail_currencyTypeName" -->
+                    <!-- android:layout_width="wrap_content" -->
+                    <!-- android:layout_height="wrap_content" -->
+                    <!-- android:layout_alignParentRight="true" -->
+                    <!-- android:layout_marginRight="15dp" -->
+                    <!-- android:textColor="@color/main_black" -->
+                    <!-- android:textSize="13sp" /> -->
+                    <!-- </RelativeLayout> -->
+
+                    <RelativeLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="horizontal" >
+                    </RelativeLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/white"
+                    android:orientation="horizontal"
+                    android:paddingLeft="15dp"
+                    android:paddingRight="15dp" >
+
+                    <RelativeLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:orientation="horizontal" >
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentLeft="true"
+                            android:text="@string/sale_time"
+                            android:textColor="@color/main_light_black"
+                            android:textSize="@dimen/product_detail_item" />
+
+                        <TextView
+                            android:id="@+id/detail_sale_time"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentRight="true"
+                            android:textColor="@color/main_black"
+                            android:textSize="@dimen/product_detail_item" />
+                    </RelativeLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="15dp"
+                    android:layout_marginTop="5dp"
+                    android:background="@color/white"
+                    android:orientation="horizontal"
+                    android:paddingLeft="15dp"
+                    android:paddingRight="15dp" >
+
+                    <RelativeLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:orientation="horizontal" >
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentLeft="true"
+                            android:text="@string/profit_time"
+                            android:textColor="@color/main_light_black"
+                            android:textSize="@dimen/product_detail_item" />
+
+                        <TextView
+                            android:id="@+id/detail_profit_time"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentRight="true"
+                            android:textColor="@color/main_black"
+                            android:textSize="@dimen/product_detail_item" />
+                    </RelativeLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/stroke2"
+                    android:layout_width="fill_parent"
+                    android:layout_height="2dp"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    android:background="@drawable/stroke"
+                    android:orientation="horizontal" />
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/white"
+                    android:orientation="horizontal"
+                    android:paddingBottom="10dp"
+                    android:paddingLeft="15dp"
+                    android:paddingRight="15dp"
+                    android:paddingTop="10dp" >
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="15dp"
+                    android:orientation="vertical" >
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" >
+
+                        <LinearLayout
+                            android:id="@+id/rl1"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="horizontal"
+                            android:paddingLeft="15dp" >
+
+                            <TextView
+                                android:id="@+id/invest_money_text"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentLeft="true"
+                                android:text="认购金额"
+                                android:textColor="@color/main_light_black"
+                                android:textSize="@dimen/product_detail_item" />
+
+                            <EditText
+                                android:id="@+id/invest_money"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:background="@drawable/bottom_line_shape"
+                                android:digits=".0123456789"
+                                android:gravity="right"
+                                android:hint="0.00"
+                                android:inputType="numberDecimal"
+                                android:singleLine="true"
+                                android:textColor="@color/red"
+                                android:textColorHint="@color/red"
+                                android:textSize="@dimen/product_detail_item" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="1dp"
+                                android:layout_marginRight="15dp"
+                                android:text="元"
+                                android:textColor="@color/main_light_black"
+                                android:textSize="@dimen/product_detail_item" />
+                        </LinearLayout>
+
+                        <!-- <RelativeLayout -->
+                        <!-- android:id="@+id/rl2" -->
+                        <!-- android:layout_width="wrap_content" -->
+                        <!-- android:layout_height="wrap_content" -->
+                        <!-- android:layout_below="@id/rl1" -->
+                        <!-- android:layout_marginTop="5dp" -->
+                        <!-- android:gravity="center_vertical" -->
+                        <!-- android:paddingLeft="15dp" > -->
+
+
+                        <!-- <TextView -->
+                        <!-- android:id="@+id/invest_days_text" -->
+                        <!-- android:layout_width="wrap_content" -->
+                        <!-- android:layout_height="wrap_content" -->
+                        <!-- android:layout_alignParentLeft="true" -->
+                        <!-- android:text="投资期限" -->
+                        <!-- android:textColor="@color/main_light_black" -->
+                        <!-- android:textSize="@dimen/product_detail_item" /> -->
+
+
+                        <!-- <RelativeLayout -->
+                        <!-- android:id="@+id/invest_days_layout" -->
+                        <!-- android:layout_width="80dp" -->
+                        <!-- android:layout_height="wrap_content" -->
+                        <!-- android:layout_marginLeft="5dp" -->
+                        <!-- android:layout_toRightOf="@id/invest_days_text" > -->
+
+
+                        <!-- <TextView -->
+                        <!-- android:id="@+id/invest_days" -->
+                        <!-- android:layout_width="match_parent" -->
+                        <!-- android:layout_height="wrap_content" -->
+                        <!-- android:background="@null" -->
+                        <!-- android:gravity="right" -->
+                        <!-- android:singleLine="true" -->
+                        <!-- android:textColor="@color/red" -->
+                        <!-- android:textColorHint="@color/red" -->
+                        <!-- android:textSize="@dimen/product_detail_item" /> -->
+                        <!-- </RelativeLayout> -->
+
+
+                        <!-- <TextView -->
+                        <!-- android:layout_width="wrap_content" -->
+                        <!-- android:layout_height="wrap_content" -->
+                        <!-- android:layout_marginLeft="5dp" -->
+                        <!-- android:layout_toRightOf="@id/invest_days_layout" -->
+                        <!-- android:text="天" -->
+                        <!-- android:textColor="@color/main_light_black" -->
+                        <!-- android:textSize="@dimen/product_detail_item" /> -->
+                        <!-- </RelativeLayout> -->
+
+                        <LinearLayout
+                            android:id="@+id/rl3"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1" >
+
+                            <TextView
+                                android:id="@+id/invest_result_text"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentLeft="true"
+                                android:orientation="horizontal"
+                                android:text="最终收益"
+                                android:textColor="@color/main_light_black"
+                                android:textSize="@dimen/product_detail_item" />
+
+                            <TextView
+                                android:id="@+id/invest_result"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:background="@null"
+                                android:gravity="right"
+                                android:singleLine="true"
+                                android:text="0.00"
+                                android:textColor="@color/red"
+                                android:textColorHint="@color/red"
+                                android:textSize="@dimen/product_detail_item" />
+
+                            <TextView
+                                android:id="@+id/invest_result_unit"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="1dp"
+                                android:layout_marginRight="15dp"
+                                android:text="元"
+                                android:textColor="@color/main_light_black"
+                                android:textSize="@dimen/product_detail_item" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <Button
+                        android:id="@+id/change_money_click"
+                        android:layout_width="100dp"
+                        android:layout_height="30dp"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="10dp"
+                        android:background="@drawable/rect_gray_all"
+                        android:text="@string/money_sum"
+                        android:textColor="@color/title" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/view_split"
+                    android:background="@color/func_split" />
+            </LinearLayout>
+
+            <WebView
+                android:id="@+id/detail_webview"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp" />
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

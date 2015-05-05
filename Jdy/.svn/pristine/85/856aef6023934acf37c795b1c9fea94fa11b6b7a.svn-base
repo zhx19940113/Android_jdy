@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TabHost xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@android:id/tabhost"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical" >
+
+        <FrameLayout
+            android:id="@android:id/tabcontent"
+            android:layout_width="fill_parent"
+            android:layout_height="0.0dip"
+            android:layout_weight="1.0" />
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="0.3dp"
+            android:background="@color/func_split" >
+        </View>
+
+        <TabWidget
+            android:id="@android:id/tabs"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.0"
+            android:visibility="gone" />
+
+        <RadioGroup
+            android:id="@+id/main_radio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:background="#FFFFFF"
+            android:gravity="left"
+            android:orientation="horizontal" >
+
+            <RadioButton
+                android:id="@+id/mainTabs_radio_home"
+                style="@style/mainTabs_radio"
+                 android:button="@null"
+                android:text="@string/start_product"
+                android:drawableTop="@drawable/chat_index_btn"
+                android:textColor="@drawable/tabhost_text_color"
+                android:textSize="11dp" />
+
+            <RadioButton
+                android:id="@+id/mainTabs_radio_msg"
+                style="@style/mainTabs_radio"
+                android:button="@null"
+                android:drawableTop="@drawable/chat_message_btn"
+                android:text="@string/title_world"
+                android:textColor="@drawable/tabhost_text_color"
+                android:textSize="11dp" />
+
+            <RadioButton
+                android:id="@+id/mainTabs_radio_selfInfo"
+                style="@style/mainTabs_radio"
+                android:layout_marginBottom="3dp"
+                android:button="@null"
+                android:drawableTop="@drawable/chat_me_btn"
+                android:text="@string/title_group"
+                android:textColor="@drawable/tabhost_text_color"
+                android:textSize="11dp" />
+        </RadioGroup>
+    </LinearLayout>
+
+</TabHost>

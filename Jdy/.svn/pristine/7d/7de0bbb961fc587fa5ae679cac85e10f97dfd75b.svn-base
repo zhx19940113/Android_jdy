@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">真宝岛</string>
+    <string name="action_settings">Settings</string>
+    <string name="start_product">星品</string>
+    <string name="title_world">金矿</string>
+    <string name="title_group">我的</string>
+    <string name="title_activity_wx_test">WxTestActivity</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="title_activity_wxentry">WXEntryActivity</string>
+    <string name="viewpager_indicator">%1$d/%2$d</string>
+    <!-- 微信 -->
+    <string name="errcode_success">分享成功</string>
+    <string name="errcode_cancel">授权取消</string>
+    <string name="errcode_deny">被拒绝</string>
+    <string name="errcode_unknown">发送返回</string>
+    <string name="errcode_login_success">授权成功</string>
+    <string name="errcode_register_cancel">对不起,您未通过微信授权,注册失败</string>
+    <string name="cash_t1">可提取余额（元）</string>
+    <string name="cash_t2">银行账号:</string>
+    <string name="cash_t3">换个账号</string>
+    <string name="cash_tt3">本次提现:</string>
+    <string name="cash_tt4">元</string>
+    <string name="cash_t5">申请提现后，我们将会尽快审核并发放到您的银行账户</string>
+    <string name="cash_t6">确定提现</string>
+    <string name="mainActivity_forward_dialog_title">转发赚钱</string>
+    <string name="title_activity_msg_list">MsgListActivity</string>
+    <string name="title_activity_wx_login">WxLoginActivity</string>
+    <string name="score_txt">1.新用户可直接获得50积分\n2.每次转发产品而已获取1积分，一个产品只有1000个积分\n3.购买一个1000元的理财产品可获取1个积分\n4.每升一级获取50个积分</string>
+    <string name="bindWechat_tip_text">~微信转发赚钱~</string>
+    <string name="protitle">产品标题</string>
+    <string name="loading">处理中...</string>
+    <string name="minSubsAmount">起购金额</string>
+    <string name="expeAnnuRevnue">年化收益</string>
+    <string name="period">投资期限</string>
+    <string name="profitTypeName">收益类型</string>
+    <string name="statusName">申购状态</string>
+    <string name="sale_time">销售起止日期</string>
+    <string name="about_us_tip">您身边的金融便利店</string>
+    <string name="no_mobilephone">暂未绑定</string>
+    <string name="no_user_name">您还没有昵称哦</string>
+    <string name="expeAnnuRevnue_text">预期收益率</string>
+    <string name="expeAnnuRevnue_data">0.00%</string>
+    <string name="buy_button">赚钱</string>
+    <string name="share_button">省钱</string>
+    <string name="profit_time">"收益起止日期 "</string>
+    <string name="money_sum">计算</string>
+    <string name="edit_money">"认购金额 "</string>
+    <string name="edit_money_hint_text">0.00</string>
+    <string name="yuan">元</string>
+    <string name="change_money_click_button">计算收益</string>
+    <string name="hot">热卖</string>
+    <string name="future_rate">预期年化收益率</string>
+    <string name="update_app">立即更新</string>
+
+</resources>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval" >  <!-- oval是椭圆形的意思，未指定参数则默认是圆 -->
+
+    <solid android:color="#44ffffff" /> <!-- 填充半透明的白色，前两位代表透明度 -->
+
+</shape>

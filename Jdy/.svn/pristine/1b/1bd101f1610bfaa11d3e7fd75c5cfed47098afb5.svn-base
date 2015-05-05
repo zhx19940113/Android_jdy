@@ -1,0 +1,534 @@
+/**
+ * Copyright (c) 2015
+ *
+ * Licensed under the UCG License, Version 1.0 (the "License");
+ */
+package com.app.jdy.adapter;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.app.jdy.R;
+import com.app.jdy.entity.ProductEntity;
+import com.app.jdy.ui.LoginActivity;
+import com.app.jdy.utils.ChineseMoneyUtils;
+import com.app.jdy.utils.CommonUtils;
+import com.app.jdy.utils.Constants;
+import com.app.jdy.utils.StringUtils;
+import com.app.jdy.widget.CustomForwardDialog;
+import com.app.jdy.widget.CustomSaveMoneyDialog;
+
+/**
+ * description :自定义优化ListViewAdapter
+ * 
+ * @version 1.0
+ * @author zhonghuixiong
+ * @createtime : 2015-1-22 下午5:45:48
+ * 
+ *             修改历史: 修改人 修改时间 修改内容 --------------- -------------------
+ *             ----------------------------------- zhonghuixiong 2015-1-22
+ *             下午5:45:48
+ * 
+ */
+public class ListViewAdapter extends BaseAdapter {
+	private LayoutInflater inflater;
+	private Context context;
+	private String[] tempChange;
+	/**
+	 * 产品ID
+	 */
+	private String ID;
+	/**
+	 * 产品主题
+	 */
+	private String shareSubject;
+	private String prodId;
+	/**
+	 * 产品名称
+	 */
+	private String name;
+	/**
+	 * 会员ID
+	 */
+	private String memberId;
+	/**
+	 * 产品类型
+	 */
+	private String prodTypeCode;
+	/**
+	 * 存放ListView产品实体的数组
+	 */
+	/**
+	 * 存续期
+	 */
+	private int period;
+
+	private int positionId;
+	/**
+	 * 产品经理信息
+	 */
+	private ArrayList<ProductEntity> listViewProductEntitiesList;
+
+	public ListViewAdapter(Context context,
+			ArrayList<ProductEntity> listViewProductEntitiesList) {
+		inflater = LayoutInflater.from(context);
+		this.context = context;
+		this.listViewProductEntitiesList = listViewProductEntitiesList;
+	}
+
+	@Override
+	public int getCount() {
+		return listViewProductEntitiesList.size();
+	}
+
+	@Override
+	public Object getItem(int position) {
+		return position;
+	}
+
+	@Override
+	public long getItemId(int position) {
+		return position;
+	}
+
+	@Override
+	public View getView(final int position, View convertView, ViewGroup parent) {
+
+		if (convertView == null || convertView.getTag() == null) {
+			convertView = inflater.inflate(R.layout.listview_item, null);
+			/** 得到各个控件的对象 */
+			final ImageView imageView1 = (ImageView) convertView
+					.findViewById(R.id.imageView1);
+			final ImageView imageView2 = (ImageView) convertView
+					.findViewById(R.id.imageView2);
+			final TextView type_textview = (TextView) convertView
+					.findViewById(R.id.type_textview);
+			final TextView textView1 = (TextView) convertView
+					.findViewById(R.id.textView1);
+			final TextView textView2 = (TextView) convertView
+					.findViewById(R.id.textView2);
+			final TextView textView3 = (TextView) convertView
+					.findViewById(R.id.textView3);
+			final TextView textView4 = (TextView) convertView
+					.findViewById(R.id.textView4);
+			final TextView textView5 = (TextView) convertView
+					.findViewById(R.id.textView5);
+			final TextView textView6 = (TextView) convertView
+					.findViewById(R.id.textView6);
+			final TextView textView7 = (TextView) convertView
+					.findViewById(R.id.textView7);
+			final TextView textView8 = (TextView) convertView
+					.findViewById(R.id.textView8);
+
+			ProductEntity product=listViewProductEntitiesList.get(position);
+			/**
+			 * 获取用户memberId
+			 */
+			SharedPreferences userPreferences = context.getSharedPreferences(
+					"umeng_general_config", Context.MODE_PRIVATE);
+			memberId = userPreferences.getString("ID", null);
+			/**
+			 * 转发按钮事件
+			 */
+			imageView2.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					positionId = (int) getItemId(position);
+					name = listViewProductEntitiesList.get(positionId)
+							.getName();
+					ID = listViewProductEntitiesList.get(positionId).getID();
+					prodTypeCode = listViewProductEntitiesList.get(positionId)
+							.getProdTypeCode();
+					Map<String, String> map = new HashMap<String, String>();
+					map.put("proType", listViewProductEntitiesList.get(position)
+							.getProType());
+					map.put("name", listViewProductEntitiesList.get(position)
+							.getName());
+					map.put("ID", listViewProductEntitiesList.get(position)
+							.getID());
+					map.put("prodTypeCode", prodTypeCode);
+					map.put("memberId", memberId);
+					map.put("shareSubject",
+							listViewProductEntitiesList.get(position)
+									.getShareSubject());
+					map.put("productSubject",
+							listViewProductEntitiesList.get(position)
+									.getProductSubject());
+					map.put("text1", textView2.getText().toString());
+					map.put("text2", textView3.getText().toString());
+					map.put("text3", textView4.getText().toString());
+					map.put("text4", textView5.getText().toString());
+					map.put("text5", textView6.getText().toString());
+					map.put("text6", textView7.getText().toString());
+					map.put("text7", textView1.getText().toString());
+					map.put("text8", textView8.getText().toString());
+					CustomForwardDialog customForwardDialog = new CustomForwardDialog(
+							context, R.style.ForwardDialog, map, true);
+					customForwardDialog.show();
+				}
+			});
+
+			/**
+			 * 购买按钮事件
+			 */
+			imageView1.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					if (CommonUtils.checkLogin(context)) {
+						prodId = listViewProductEntitiesList.get(position)
+								.getID();
+						Map<String, String> map = new HashMap<String, String>();
+						map.put("ID", listViewProductEntitiesList.get(position)
+								.getID());
+						map.put("memberId", memberId);
+						CustomSaveMoneyDialog customSaveMoneyDialog = new CustomSaveMoneyDialog(
+								context, R.style.ForwardDialog, map);
+						customSaveMoneyDialog
+								.requestWindowFeature(Window.FEATURE_NO_TITLE);
+						customSaveMoneyDialog.show();
+					} else {
+						context.startActivity(new Intent(context,
+								LoginActivity.class));
+					}
+
+				}
+			});
+			
+			//产品描述
+			textView1.setText(StringUtils.isEmpty(product.getProductSubject(), ""));
+			//产品名称
+			textView8.setText(StringUtils.isEmpty(product.getName(), Constants.ON_CONTENT_N));
+			if (listViewProductEntitiesList.get(position).getProdTypeName()
+					.equals("银行类")
+					|| listViewProductEntitiesList.get(position)
+							.getProdTypeName().equals("")) {
+				type_textview.setText("银行理财");
+				
+				textView5.setText("起购金额");
+				textView2.setText(String.valueOf(listViewProductEntitiesList
+						.get(position).getMinSubsAmount()) == "null" ? ""
+						: String.valueOf(listViewProductEntitiesList.get(
+								position).getMinSubsAmount()));
+
+				textView6.setText("收益率");
+
+				textView3.setText(String.valueOf(listViewProductEntitiesList
+						.get(position).getExpeAnnuRevnue()) == "null" ? ""
+						: String.valueOf(listViewProductEntitiesList.get(
+								position).getExpeAnnuRevnue())+"%");
+
+				textView7.setText("存续期");
+				textView4.setText(String.valueOf(listViewProductEntitiesList
+						.get(position).getPeriod()) == "null" ? "" : String
+						.valueOf(listViewProductEntitiesList.get(position)
+								.getPeriod()));
+
+			} else if (listViewProductEntitiesList.get(position)
+					.getProdTypeName().equals("保险类")
+					|| listViewProductEntitiesList.get(position)
+							.getProdTypeName().equals("")) {
+				type_textview.setText("保险理财");
+
+				textView5.setText("保险类型");
+
+				textView2.setText(listViewProductEntitiesList.get(position)
+						.getInsuranceType() == "null" ? ""
+						: listViewProductEntitiesList.get(position)
+								.getInsuranceType());
+
+				textView6.setText("期限");
+				textView3.setText(String.valueOf(listViewProductEntitiesList
+						.get(position).getPeriod()));
+
+				textView7.setText("发行公司");
+				textView4.setText(String.valueOf(listViewProductEntitiesList
+						.get(position).getIssuer()) == "null" ? "" : String
+						.valueOf(listViewProductEntitiesList.get(position)
+								.getIssuer()));
+			} else if (listViewProductEntitiesList.get(position)
+					.getProdTypeName().equals("公募基金类")
+					|| listViewProductEntitiesList.get(position)
+							.getProdTypeName().equals("")) {
+				type_textview.setText("公募基金");
+				textView5.setText("认购最低限额");
+				
+				textView2.setText(String.valueOf(listViewProductEntitiesList
+						.get(position).getMinSubsAmount()) == "null" ? ""
+						: String.valueOf(listViewProductEntitiesList.get(
+								position).getMinSubsAmount()));
+
+				textView6.setText("基金管理人");
+				textView3.setText(String.valueOf(listViewProductEntitiesList
+						.get(position).getFundDirector()) == "null" ? ""
+						: String.valueOf(listViewProductEntitiesList.get(
+								position).getFundDirector()));
+
+				textView7.setText("基金类型");
+				textView4.setText(String.valueOf(listViewProductEntitiesList
+						.get(position).getIssuer()) == "null" ? "" : String
+						.valueOf(listViewProductEntitiesList.get(position)
+								.getIssuer()));
+			} else if (listViewProductEntitiesList.get(position)
+					.getProdTypeName().equals("私募基金类")
+					|| listViewProductEntitiesList.get(position)
+							.getProdTypeName().equals("")) {
+				type_textview.setText("私募基金");
+				String fundType = listViewProductEntitiesList.get(position)
+						.getFundType();
+				if ("equity".equals(fundType)) {
+
+					textView5.setText("最低认购金额");
+
+					textView2.setText(String
+							.valueOf(listViewProductEntitiesList.get(position)
+									.getMinSubsAmount()) == "null" ? ""
+							: String.valueOf(listViewProductEntitiesList.get(
+									position).getMinSubsAmount()));
+
+					textView6.setText("存续期");
+					textView3.setText(String
+							.valueOf(listViewProductEntitiesList.get(position)
+									.getPeriod()));
+					textView7.setText("管理人");
+					textView4.setText(String
+							.valueOf(listViewProductEntitiesList.get(position)
+									.getFundDirector()));
+				} else if ("claim".equals(fundType)) {
+
+					textView5.setText("预期收益");
+
+					textView2.setText(String
+							.valueOf(listViewProductEntitiesList.get(position)
+									.getExpeAnnuRevnue()) == "null" ? ""
+							: String.valueOf(listViewProductEntitiesList.get(
+									position).getExpeAnnuRevnue()));
+
+					textView6.setText("存续期");
+					textView3.setText(String
+							.valueOf(listViewProductEntitiesList.get(position)
+									.getPeriod()));
+					textView7.setText("投资方向");
+					textView4.setText(String
+							.valueOf(listViewProductEntitiesList.get(position)
+									.getInvestDirection()));
+				} else if ("stock".equals(fundType)) {
+
+					textView5.setText("认购金额");
+					if (String.valueOf(
+							listViewProductEntitiesList.get(position)
+									.getMinSubsAmount()).equals("")) {
+						textView2.setText("暂无");
+					} else {
+						textView2.setText(String
+								.valueOf(listViewProductEntitiesList.get(
+										position).getMinSubsAmount()));
+					}
+					textView6.setText("管理人");
+					if (String.valueOf(
+							listViewProductEntitiesList.get(position)
+									.getFundDirector()).equals("")||String.valueOf(
+											listViewProductEntitiesList.get(position)
+											.getFundDirector()).equals("null")) {
+						textView3.setText("暂无");
+					} else {
+						textView3.setText(String
+								.valueOf(listViewProductEntitiesList.get(
+										position).getFundDirector()));
+					}
+					textView7.setText("最高收益");
+
+					textView4.setText(String
+							.valueOf(listViewProductEntitiesList.get(position)
+									.getExpeAnnuRevnue()) == "null" ? ""
+							: String.valueOf(listViewProductEntitiesList.get(
+									position).getExpeAnnuRevnue()));
+
+				} else if ("exchange".equals(fundType)) {
+
+					textView5.setText("认购金额");
+
+					textView2.setText(String
+							.valueOf(listViewProductEntitiesList.get(position)
+									.getMinSubsAmount()) == "null" ? ""
+							: String.valueOf(listViewProductEntitiesList.get(
+									position).getMinSubsAmount()));
+
+					textView6.setText("管理人");
+					textView3.setText(String
+							.valueOf(listViewProductEntitiesList.get(position)
+									.getFundDirector()) == "null" ? "" : String
+							.valueOf(listViewProductEntitiesList.get(position)
+									.getFundDirector()));
+					textView7.setText("最高收益");
+
+					textView4.setText(String
+							.valueOf(listViewProductEntitiesList.get(position)
+									.getExpeAnnuRevnue()) == "null" ? ""
+							: String.valueOf(listViewProductEntitiesList.get(
+									position).getExpeAnnuRevnue()));
+
+				} else if ("derivative".equals(fundType)) {
+
+					textView5.setText("认购金额");
+					textView2.setText(String
+							.valueOf(listViewProductEntitiesList.get(position)
+									.getMinSubsAmount()) == "null" ? ""
+							: String.valueOf(listViewProductEntitiesList.get(
+									position).getMinSubsAmount()));
+
+					textView6.setText("管理人");
+
+					textView3.setText(String
+							.valueOf(listViewProductEntitiesList.get(position)
+									.getFundDirector()) == "null" ? "" : String
+							.valueOf(listViewProductEntitiesList.get(position)
+									.getFundDirector()));
+
+					textView7.setText("最高收益");
+
+					textView4.setText(String
+							.valueOf(listViewProductEntitiesList.get(position)
+									.getExpeAnnuRevnue()) == "null" ? ""
+							: String.valueOf(listViewProductEntitiesList.get(
+									position).getExpeAnnuRevnue()));
+
+				} else if ("bond".equals(fundType)) {
+
+					textView5.setText("认购金额");
+
+					textView2.setText(String
+							.valueOf(listViewProductEntitiesList.get(position)
+									.getMinSubsAmount()) == "null" ? ""
+							: String.valueOf(listViewProductEntitiesList.get(
+									position).getMinSubsAmount()));
+
+					textView6.setText("管理人");
+					textView3.setText(String
+							.valueOf(listViewProductEntitiesList.get(position)
+									.getFundDirector()) == "null" ? "" : String
+							.valueOf(listViewProductEntitiesList.get(position)
+									.getFundDirector()));
+					textView7.setText("最高收益");
+					textView4.setText(String
+							.valueOf(listViewProductEntitiesList.get(position)
+									.getExpeAnnuRevnue()) == "null" ? ""
+							: String.valueOf(listViewProductEntitiesList.get(
+									position).getExpeAnnuRevnue()));
+				} else {
+				}
+			} else if (listViewProductEntitiesList.get(position)
+					.getProdTypeName().equals("信托类")
+					|| listViewProductEntitiesList.get(position)
+							.getProdTypeName().equals("")) {
+				type_textview.setText("信托理财");
+
+				textView2.setText(listViewProductEntitiesList.get(position)
+						.getInvestDirection() == "null" ? ""
+						: listViewProductEntitiesList.get(position)
+								.getInvestDirection());
+				textView5.setText("投资方向");
+				textView3.setText(String.valueOf(listViewProductEntitiesList
+						.get(position).getExpeAnnuRevnue()) == "null" ? ""
+						: String.valueOf(listViewProductEntitiesList.get(
+								position).getExpeAnnuRevnue())+"%");
+				textView6.setText("预期收益");
+				textView4.setText(String.valueOf(listViewProductEntitiesList
+						.get(position).getPeriod()) == "null" ? "" : String
+						.valueOf(listViewProductEntitiesList.get(position)
+								.getPeriod()));
+				textView7.setText("存续期");
+
+			} else if (listViewProductEntitiesList.get(position)
+					.getProdTypeName().equals("资管类")
+					|| listViewProductEntitiesList.get(position)
+							.getProdTypeName().equals("")) {
+				type_textview.setText("资管理财");
+
+				textView2.setText(String.valueOf(listViewProductEntitiesList
+						.get(position).getInvestDirection()) == "null" ? ""
+						: String.valueOf(listViewProductEntitiesList.get(
+								position).getInvestDirection()));
+				textView5.setText("投资方向");
+				textView3.setText(String.valueOf(listViewProductEntitiesList
+						.get(position).getExpeAnnuRevnue()) == "null" ? ""
+						: String.valueOf(listViewProductEntitiesList.get(
+								position).getExpeAnnuRevnue())+"%");
+				textView6.setText("预期收益");
+
+				textView4.setText(String.valueOf(listViewProductEntitiesList
+						.get(position).getPeriod()) == "null" ? "" : String
+						.valueOf(listViewProductEntitiesList.get(position)
+								.getPeriod()));
+				textView7.setText("存续期");
+
+			} else if (listViewProductEntitiesList.get(position)
+					.getProdTypeName().equals("债权众筹类")
+					|| listViewProductEntitiesList.get(position)
+							.getProdTypeName().equals("")) {
+				type_textview.setText("债券众筹");
+				textView5.setText("预期收益");
+
+				textView2.setText(String.valueOf(listViewProductEntitiesList
+						.get(position).getExpeAnnuRevnue()) == "null" ? ""
+						: String.valueOf(listViewProductEntitiesList.get(
+								position).getExpeAnnuRevnue()));
+
+				textView6.setText("存续期");
+
+				textView3.setText(String.valueOf(listViewProductEntitiesList
+						.get(position).getPeriod()) == "null" ? "" : String
+						.valueOf(listViewProductEntitiesList.get(position)
+								.getPeriod()));
+
+				textView7.setText("管理人");
+
+				textView4.setText(String.valueOf(listViewProductEntitiesList
+						.get(position).getFundDirector()) == "null" ? ""
+						: String.valueOf(listViewProductEntitiesList.get(
+								position).getFundDirector()));
+
+			} else if (listViewProductEntitiesList.get(position)
+					.getProdTypeName().equals("股权众筹类")
+					|| listViewProductEntitiesList.get(position)
+							.getProdTypeName().equals("")) {
+				type_textview.setText("股权众筹");
+
+				textView5.setText("管理人");
+
+				textView2.setText(String.valueOf(listViewProductEntitiesList
+						.get(position).getFundDirector()) == "null" ? ""
+						: String.valueOf(listViewProductEntitiesList.get(
+								position).getFundDirector()));
+
+				textView6.setText("投资方向");
+				textView3.setText(String.valueOf(listViewProductEntitiesList
+						.get(position).getInvestDirection()) == "null" ? ""
+						: String.valueOf(listViewProductEntitiesList.get(
+								position).getInvestDirection()));
+
+				textView7.setText("认购金额");
+
+				textView4.setText(String.valueOf(listViewProductEntitiesList
+						.get(position).getMinSubsAmount()) == "null" ? ""
+						: String.valueOf(listViewProductEntitiesList.get(
+								position).getMinSubsAmount()));
+			}
+		}
+		return convertView;
+	}
+}

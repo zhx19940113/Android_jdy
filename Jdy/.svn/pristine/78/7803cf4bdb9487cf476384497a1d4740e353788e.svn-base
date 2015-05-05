@@ -1,0 +1,209 @@
+/**
+ * Copyright (c) 2015
+ *
+ * Licensed under the UCG License, Version 1.0 (the "License");
+ */
+package com.app.jdy.context;
+
+import java.io.File;
+import java.util.ArrayList;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+
+import android.app.Application;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
+import android.os.Build;
+import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
+import android.widget.Toast;
+
+import com.app.jdy.R;
+import com.app.jdy.utils.Constants;
+import com.app.jdy.utils.HttpUtils;
+import com.app.jdy.utils.URLs;
+import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
+import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
+import com.nostra13.universalimageloader.cache.memory.MemoryCacheAware;
+import com.nostra13.universalimageloader.cache.memory.impl.LRULimitedMemoryCache;
+import com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache;
+import com.nostra13.universalimageloader.cache.memory.impl.UsingFreqLimitedMemoryCache;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
+import com.tencent.mm.sdk.openapi.BaseResp;
+import com.tencent.mm.sdk.openapi.SendAuth;
+
+/**
+ * description :
+ * 
+ * @version 1.0
+ * @author Owater
+ * @createtime : 2015-1-14 上午10:11:49
+ * 
+ *             修改历史: 修改人 修改时间 修改内容 --------------- -------------------
+ *             ----------------------------------- Owater 2015-1-14 上午10:11:49
+ * 
+ */
+public class MyApplication extends Application {
+
+	private BaseResp sendResp;
+	private String jdycode;
+	private Handler handler;
+	private String SessionId;
+	private String ID;
+	/**
+	 * 若退出，此变量需要设置成false
+	 */
+	public static boolean isGo = true;
+
+	public String getID() {
+		return ID;
+	}
+
+	public void setID(String iD) {
+		ID = iD;
+	}
+
+	public String getJdycode() {
+		return jdycode;
+	}
+
+	public void setJdycode(String jdycode) {
+		this.jdycode = jdycode;
+	}
+
+	public String getSessionId() {
+		return SessionId;
+	}
+
+	public void setSessionId(String sessionId) {
+		SessionId = sessionId;
+	}
+
+	public BaseResp getSendResp() {
+		return sendResp;
+	}
+
+	public void setSendResp(BaseResp sendResp) {
+		this.sendResp = sendResp;
+	}
+
+	@Override
+	public void onCreate() {
+		super.onCreate();
+		init();
+	}
+
+	@Override
+	public void onTerminate() {
+		super.onTerminate();
+		System.out.println("结束------------------------");
+	}
+
+	/**
+	 * 
+	 * @author Owater
+	 * @createtime 2015-1-14 上午11:13:11
+	 * @Decription 初始化
+	 * 
+	 */
+	private void init() {
+		initImageLoader();
+		handler = new Handler() {
+			@Override
+			public void handleMessage(Message msg) {
+				super.handleMessage(msg);
+				if (msg.what == Constants.NOT_NET) {
+					Toast.makeText(MyApplication.this, "网络连接失败", Toast.LENGTH_LONG).show();
+				}
+			}
+		};
+		jdycode = getUserInfo();
+		// 判断是否需要再重新登录
+		if (jdycode != null) {
+			rollLogin();
+		}
+	}
+
+	/**
+	 * 
+	 * @author Owater
+	 * @createtime 2015-1-14 上午10:13:06
+	 * @Decription 轮询登录，维持Android和后台的SSIONID
+	 * 
+	 */
+	public void rollLogin() {
+		final ArrayList<NameValuePair> tmpParams = new ArrayList<NameValuePair>();
+		tmpParams.add(new BasicNameValuePair("jdycode", jdycode));
+		new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				int i = 0;
+				while (isGo == true) {
+					i++;
+					try {
+						String result = HttpUtils.login(getApplicationContext(), tmpParams, URLs.LOGIN_URL, jdycode);
+						if (result.equals(Constants.NOT_NET + "")) {
+							Message msg = new Message();
+							msg.what = Constants.NOT_NET;
+							handler.sendMessage(msg);
+						}
+						Log.i("Thread", "轮询次数  == " + i);
+						Thread.sleep(Constants.JSESSIONID_TIME);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}).start();
+	}
+
+	/**
+	 * 
+	 * @author Owater
+	 * @createtime 2015-1-14 上午10:14:21
+	 * @Decription 读取用户信息
+	 * 
+	 * @return
+	 */
+	public String getUserInfo() {
+		SharedPreferences userPreferences = getSharedPreferences("umeng_general_config", Context.MODE_PRIVATE);
+		String string = userPreferences.getString("jdycode", null);
+		return string;
+	}
+
+	/**
+	 * 初始化ImageLoader
+	 */
+	private void initImageLoader() {
+		int memoryCacheSize = (int) (Runtime.getRuntime().maxMemory() / 5);
+		// MemoryCacheAware<String, Bitmap> memoryCache;
+		// if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
+		// memoryCache = new LruMemoryCache(memoryCacheSize);
+		// } else {
+		// memoryCache = new LRULimitedMemoryCache(memoryCacheSize);
+		// }
+
+		DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder().bitmapConfig(Config.RGB_565)
+				.showImageForEmptyUri(R.drawable.empty_photo).showImageOnFail(R.drawable.empty_photo)
+				.cacheInMemory(true).cacheOnDisk(true).resetViewBeforeLoading(true).build();
+
+		ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplicationContext())
+				.defaultDisplayImageOptions(defaultOptions).discCacheFileNameGenerator(new Md5FileNameGenerator())
+				.denyCacheImageMultipleSizesInMemory()
+				.diskCache(new UnlimitedDiscCache(new File(URLs.TEMP_DIR + File.separator)))
+				.tasksProcessingOrder(QueueProcessingType.LIFO).threadPriority(Thread.NORM_PRIORITY - 2)
+				.threadPoolSize(3).memoryCache(new UsingFreqLimitedMemoryCache(memoryCacheSize))
+				.diskCacheFileCount(100)// 缓存一百张图片
+				.writeDebugLogs().build();
+		ImageLoader.getInstance().init(config);
+	}
+
+}

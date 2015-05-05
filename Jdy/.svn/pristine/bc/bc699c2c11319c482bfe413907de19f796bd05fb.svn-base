@@ -1,0 +1,399 @@
+/**
+ * Copyright (c) 2015
+ *
+ * Licensed under the UCG License, Version 1.0 (the "License");
+ */
+package com.app.jdy.ui;
+
+import java.util.ArrayList;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import android.app.Activity;
+import android.app.Dialog;
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.TranslateAnimation;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.ant.liao.GifView;
+import com.app.jdy.R;
+import com.app.jdy.activity.MainActivity;
+import com.app.jdy.context.MyApplication;
+import com.app.jdy.utils.Constants;
+import com.app.jdy.utils.HttpUtils;
+import com.app.jdy.utils.URLs;
+import com.app.jdy.widget.WaitingDialog;
+
+/**
+ * description :
+ * 
+ * @version 1.0
+ * @author zhoufeng
+ * @createtime : 2015-1-12 上午10:39:44
+ * 
+ *             修改历史: 修改人 修改时间 修改内容 --------------- -------------------
+ *             ----------------------------------- zhoufeng 2015-1-12 上午10:39:44
+ * 
+ */
+public class LoginActivity extends Activity implements OnClickListener {
+	/**
+	 * 返回按钮
+	 */
+	private ImageView mBackImg;
+	/**
+	 * 标题
+	 */
+	private TextView title;
+	/**
+	 * 手机号码的editText组件
+	 */
+	private EditText username;
+	/**
+	 * 手机号码的textview组件
+	 */
+	private TextView username_message;
+	/**
+	 * 密码的editText组件
+	 */
+	private EditText password;
+	/**
+	 * 密码的textview组件
+	 */
+	private TextView password_message;
+	/**
+	 * 找回密码组件
+	 */
+	private Button sumbitLogin;
+	// private ImageView logoImage;
+	private TextView find_password;
+	private TextView regirster;
+	private TextView detail_product;
+	private Handler handler;
+	private final int PROGRESS_DIALOG = 0x112;
+	private String dataJson;// json数据
+	private ArrayList<NameValuePair> params;
+	private String jdycode;
+	private String ID;// 用户ID号
+	private MyApplication myApplication;
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_login);
+		initView();
+		intiAnimation();
+		intiClick();
+
+		mBackImg.setOnClickListener(this);
+		find_password.setOnClickListener(this);
+	}
+
+	/**
+	 * 
+	 * @author Owater
+	 * @createtime 2015-1-13 下午6:04:53
+	 * @Decription 初始化界面
+	 * 
+	 */
+	public void initView() {
+		mBackImg = (ImageView) findViewById(R.id.back_img);
+		mBackImg.setVisibility(View.VISIBLE);
+		title = (TextView) findViewById(R.id.title_tv);
+		title.setText("登录");
+		username = (EditText) findViewById(R.id.username);
+		password = (EditText) findViewById(R.id.password);
+
+		username_message = (TextView) findViewById(R.id.username_message);
+		password_message = (TextView) findViewById(R.id.password_message);
+		find_password = (TextView) findViewById(R.id.find_password);
+
+		sumbitLogin = (Button) findViewById(R.id.sumbitLogin);
+		// logoImage = (ImageView) findViewById(R.id.image_login_logo);
+		find_password = (TextView) findViewById(R.id.find_password);
+		regirster = (TextView) findViewById(R.id.regirster);
+		handler = new Handler() {
+			@Override
+			public void handleMessage(Message msg) {
+				super.handleMessage(msg);
+				WaitingDialog.dismissDialog();
+				if (msg.what == Constants.GETSUCC) {
+					Toast.makeText(LoginActivity.this, "登录成功",
+							Toast.LENGTH_LONG).show();
+					Intent intent = new Intent();
+					intent.setAction("org.jdy.action.finshActivityReceiver");
+					LoginActivity.this.sendBroadcast(intent);
+					LoginActivity.this.finish();
+					Intent intent2 = new Intent(LoginActivity.this,
+							MainActivity.class);
+					startActivity(intent2);
+				} else if (msg.what == Constants.GETFALL) {
+					Toast.makeText(LoginActivity.this, "登录失败",
+							Toast.LENGTH_LONG).show();
+				} else if (msg.what == Constants.NOT_NET) {
+					Toast.makeText(LoginActivity.this,
+							Constants.NO_INTENT_TIPS, Toast.LENGTH_LONG).show();
+				}
+			}
+		};
+	}
+
+	/**
+	 * 
+	 * @author Owater
+	 * @createtime 2015-1-13 下午6:05:11
+	 * @Decription 初始化动画集合
+	 * 
+	 */
+	public void intiAnimation() {
+		// 实现移动动画
+		// Animation translateAnimation = AnimationUtils.loadAnimation(this,
+		// R.anim.translate_username);
+		Animation translateAnimation1 = new TranslateAnimation(0, 0, 3000, 0);
+		translateAnimation1.setDuration(1200);// 设置动画持续时间
+		username_message.startAnimation(translateAnimation1);
+
+		Animation translateAnimation2 = new TranslateAnimation(0, 0, 3000, 0);
+		translateAnimation2.setDuration(1400);// 设置动画持续时间
+		password_message.startAnimation(translateAnimation2);
+
+		Animation translateAnimation3 = new TranslateAnimation(0, 0, 3000, 0);
+		translateAnimation3.setDuration(1600);// 设置动画持续时间
+		sumbitLogin.startAnimation(translateAnimation3);
+
+		Animation translateAnimation4 = new TranslateAnimation(0, 0, 3000, 0);
+		translateAnimation4.setDuration(1800);// 设置动画持续时间
+		find_password.startAnimation(translateAnimation4);
+		regirster.startAnimation(translateAnimation4);
+
+		// 实现渐变动画
+		// Animation animation =AnimationUtils.loadAnimation(this,
+		// R.anim.animation_image_logo);
+		Animation animation = new AlphaAnimation(0F, 1.0F);
+		animation.setDuration(5000);
+		// logoImage.startAnimation(animation);
+		animation.startNow();
+
+		/*
+		 * Animation scaleAnimation = new ScaleAnimation(1.0f, 1.0f, 4.0f, 1.0f,
+		 * Animation.RELATIVE_TO_SELF, 1.0f, Animation.RELATIVE_TO_SELF, 1.0f);
+		 * scaleAnimation.setDuration(2000);
+		 * logoImage.startAnimation(scaleAnimation); scaleAnimation.startNow();
+		 */
+	}
+
+	/**
+	 * 
+	 * @author Owater
+	 * @createtime 2015-1-13 下午6:07:23
+	 * @Decription 初始化点击事件
+	 * 
+	 */
+	public void intiClick() {
+
+		regirster.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				startActivityForResult(new Intent(LoginActivity.this,
+						RegirsterActivity.class), 2);
+			}
+		});
+
+		sumbitLogin.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				WaitingDialog.showDialog(LoginActivity.this);
+				params = new ArrayList<NameValuePair>();
+				params.add(new BasicNameValuePair("userName", username
+						.getText().toString()));
+				params.add(new BasicNameValuePair("password", password
+						.getText().toString()));
+
+				/**
+				 * 开启线程访问服务端
+				 */
+				Thread thread = new Thread(new Runnable() {
+
+					@Override
+					public void run() {
+						dataJson = HttpUtils.login(getApplicationContext(),
+								params, URLs.LOGIN_URL, null);
+						Message msg = new Message();
+
+						if (dataJson.equals("500")) {// 无网络连接状态
+							msg.what = Constants.NOT_NET;
+						} else if (parseJson()) {
+							msg.what = Constants.GETSUCC;
+						} else {
+							HttpUtils.JSESSIONID = null;// 登录失败，SSIONID也要设置为空值
+							msg.what = Constants.GETFALL;
+						}
+						handler.sendMessage(msg);
+					}
+				});
+				thread.start();
+			}
+		});
+	}
+
+	/**
+	 * 
+	 * @author Owater
+	 * @createtime 2015-1-14 上午12:36:43
+	 * @Decription 解析Json
+	 * 
+	 */
+	public boolean parseJson() {
+		try {
+			JSONObject jsonObject = new JSONObject(dataJson);
+			boolean success = jsonObject.getBoolean("success");
+			if (success) {
+				String attributes = jsonObject.getString("attributes");
+				JSONObject jdycodeObject = new JSONObject(attributes);
+				jdycode = jdycodeObject.getString("jdycode");
+				ID = jdycodeObject.getString("ID");
+				saveUserInfo(jdycode, ID);
+				rollLogin();
+			} else {
+				return false;
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		return true;
+	}
+
+	/**
+	 * 
+	 * @author Owater
+	 * @createtime 2015-1-14 上午1:08:51
+	 * @Decription 轮询登录，维持Android和后台的SSIONID
+	 * 
+	 */
+	public void rollLogin() {
+		final ArrayList<NameValuePair> tmpParams = new ArrayList<NameValuePair>();
+		tmpParams.add(new BasicNameValuePair("jdycode", jdycode));
+		new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				int i = 0;
+				while (true) {
+					i++;
+					try {
+						HttpUtils.login(getApplicationContext(), tmpParams,
+								URLs.LOGIN_URL, jdycode);
+						Log.i("Thread", "轮询次数  == " + i);
+						Thread.sleep(Constants.JSESSIONID_TIME);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}).start();
+	}
+
+	/**
+	 * 
+	 * @author Owater
+	 * @createtime 2015-1-14 上午12:56:54
+	 * @Decription 保存用户信息
+	 * 
+	 */
+	public void saveUserInfo(String jdycode, String ID) {
+		SharedPreferences userPreferences;
+		userPreferences = getSharedPreferences("umeng_general_config",
+				Context.MODE_PRIVATE);
+		Editor editor = userPreferences.edit();
+		editor.putString("jdycode", jdycode);
+		editor.putString("ID", ID);
+		editor.commit();
+	}
+
+	/**
+	 * 
+	 * @author Owater
+	 * @createtime 2015-1-14 上午9:23:21
+	 * @Decription 判断是否曾经登录过
+	 * 
+	 * @return
+	 */
+	public boolean getUserInfo() {
+		SharedPreferences userPreferences = getSharedPreferences(
+				"umeng_general_config", Context.MODE_PRIVATE);
+		String string = userPreferences.getString("jdycode", "");
+		if (string.length() > 10) {
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public void onClick(View v) {
+		switch (v.getId()) {
+		case R.id.back_img:
+			// 返回按钮
+			// Intent intent6 = new Intent(LoginActivity.this,
+			// JdyActivity.class);
+			// Intent intent = new Intent();
+			// LoginActivity.this.sendBroadcast(intent);
+			// intent.setAction("org.jdy.action.finshActivityReceiver");
+			// LoginActivity.this.sendBroadcast(intent);
+			// startActivity(intent6);
+			finish();
+			Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+			startActivity(intent);
+			break;
+		case R.id.find_password:
+			startActivity(new Intent(LoginActivity.this,
+					CallBackPasswordActivity.class));
+			break;
+		default:
+			break;
+		}
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		if (requestCode == 2) {
+			if (resultCode == 2) {
+				finish();
+			}
+		}
+	}
+
+	@Override
+	public void onBackPressed() {
+		super.onBackPressed();
+		Intent intent7 = new Intent(LoginActivity.this, MainActivity.class);
+
+		Intent intent = new Intent();
+		intent.setAction("org.jdy.action.finshActivityReceiver");
+		LoginActivity.this.sendBroadcast(intent);
+		Log.i("mydebug", "发送广播");
+		startActivity(intent7);
+		this.finish();
+	}
+
+}

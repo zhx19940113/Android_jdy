@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical" >
+    
+    <include layout="@layout/title_bar" />
+    
+    
+     <WebView
+        android:id="@+id/content_html"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:paddingRight="5.0dip"
+        android:text="Mail HTML this is a HTML."
+         />
+     
+     <TextView 
+         android:id="@+id/content_html_txt"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+         />
+
+</LinearLayout>

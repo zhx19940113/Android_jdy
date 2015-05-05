@@ -1,0 +1,60 @@
+package com.app.jdy.utils;
+
+import java.text.DecimalFormat;
+
+import android.animation.FloatEvaluator;
+import android.animation.ValueAnimator;
+import android.animation.ValueAnimator.AnimatorUpdateListener;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+public class UIUtils {
+
+	/**
+	 * 数字增加到指定数额的动画
+	 * 
+	 * @param target
+	 * @param start
+	 * @param end
+	 * @param duration
+	 */
+	public static void autoIncrement(final TextView target, final float start, final float end, long duration) {
+
+		ValueAnimator animator = ValueAnimator.ofFloat(start, end);
+
+		animator.addUpdateListener(new AnimatorUpdateListener() {
+			private FloatEvaluator evalutor = new FloatEvaluator();
+			private DecimalFormat format = new DecimalFormat("####0.0#");
+
+			@Override
+			public void onAnimationUpdate(ValueAnimator animation) {
+
+				float fraction = animation.getAnimatedFraction();
+				float currentValue = evalutor.evaluate(fraction, start, end);
+				target.setText(format.format(currentValue));
+			}
+		});
+		animator.setDuration(duration);
+		animator.start();
+	}
+
+	/**
+	 * 强制回收 ImageView的Drawable
+	 * 
+	 * @param imageView
+	 */
+	public static void recycleImageViewDrawable(ImageView imageView) {
+		 if (imageView == null) return;
+	        Drawable drawable = imageView.getDrawable();
+	        if (drawable != null && drawable instanceof BitmapDrawable) {
+	            BitmapDrawable bitmapDrawable = (BitmapDrawable) drawable;
+	            Bitmap bitmap = bitmapDrawable.getBitmap();
+	            if (bitmap != null && !bitmap.isRecycled()) {
+	                bitmap.recycle();
+	            }
+	        }
+	}
+}

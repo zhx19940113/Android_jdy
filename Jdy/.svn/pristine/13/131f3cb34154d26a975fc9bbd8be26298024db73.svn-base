@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#d3dde2"
+    android:orientation="vertical" >
+
+    <include layout="@layout/title_bar" />
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="200dp"
+        android:background="@color/title"
+        android:gravity="center"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="140dp"
+            android:gravity="center" >
+
+            <TextView
+                android:id="@+id/my_order_sum"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="-10dp"
+                android:text="0"
+                android:textColor="@color/white"
+                android:textSize="90dp" />
+
+            <TextView
+                android:id="@+id/my_order_sum_yuan"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="-30dp"
+                android:text="元"
+                android:textColor="@color/white"
+                android:textSize="30dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="60dp"
+            android:layout_marginTop="-10dp"
+            android:gravity="center" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="\\(￣ˇ￣)/购买多多省钱"
+                android:textColor="#1972bc"
+                android:textSize="15dp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="60dp"
+            android:layout_marginTop="1dp"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:layout_width="120dp"
+                android:layout_height="60dp"
+                android:background="@color/white"
+                android:gravity="center"
+                android:text="购买产品"
+                android:textColor="#ed736d"
+                android:textSize="15dp" />
+
+            <TextView
+                android:layout_width="120dp"
+                android:layout_height="60dp"
+                android:layout_marginLeft="1dp"
+                android:background="@color/white"
+                android:gravity="center"
+                android:text="购买金额"
+                android:textColor="#ed736d"
+                android:textSize="15dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginLeft="1dp"
+                android:background="@color/white"
+                android:gravity="center"
+                android:text="购买日期"
+                android:textColor="#ed736d"
+                android:textSize="15dp" />
+        </LinearLayout>
+
+        <ListView
+            android:id="@+id/my_order_list"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" 
+            android:background="#d3dde2"
+            android:divider="@null" >
+        </ListView>
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical" 
+    android:id="@+id/my_content_view">
+
+    <include layout="@layout/title_bar" />
+
+    <LinearLayout
+        android:id="@+id/cash_linear"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.1"
+        android:background="#46abff"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/cash_textView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="32dp"
+            android:layout_weight="0.01"
+            android:gravity="center_horizontal"
+            android:text="@string/cash_t1"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_size_16" />
+
+        <TextView
+            android:id="@+id/cash_textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="0dp"
+            android:layout_marginTop="0dp"
+            android:layout_weight="0.05"
+            android:text="00.00"
+            android:textColor="@color/white"
+            android:textColorHint="@color/white"
+            android:textSize="45sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.05"
+            android:background="@color/white"
+            android:orientation="horizontal"
+            android:paddingLeft="32dp"
+            android:paddingTop="40dp" >
+
+            <TextView
+                android:id="@+id/cash_textView3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="银行账号：" />
+
+            <TextView
+                android:id="@+id/cash_textView4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_size_15" />
+
+            <TextView
+                android:id="@+id/cash_textView6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/cash_textView5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:clickable="true"
+                android:text="@string/cash_t3"
+                android:textColor="@drawable/cash_textview_selector" />
+
+            <ImageView
+                android:id="@+id/balance_gogo"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:layout_marginTop="5dp"
+                android:src="@drawable/gogo" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="1dip"
+            android:layout_marginLeft="32dp"
+            android:layout_marginRight="32dp"
+            android:layout_marginTop="5dp"
+            android:background="#d5dee5" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:background="@color/white" >
+
+            <TextView
+                android:id="@+id/textView6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginRight="33dp"
+                android:layout_marginTop="17dp"
+                android:text="@string/cash_tt4"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_size_15" />
+
+            <TextView
+                android:id="@+id/textView5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignTop="@+id/textView6"
+                android:layout_marginLeft="33dp"
+                android:text="@string/cash_tt3" />
+
+            <EditText
+                android:id="@+id/cash_editext1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/textView5"
+                android:layout_alignBottom="@+id/textView5"
+                android:layout_marginLeft="16dp"
+                android:layout_toRightOf="@+id/textView5"
+                android:background="@drawable/rounded_edittext_no"
+                android:inputType="numberDecimal"
+                android:digits=".0123456789" />
+
+            <Button
+                android:id="@+id/cash_button1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/textView5"
+                android:layout_alignRight="@+id/textView6"
+                android:layout_centerVertical="true"
+                android:background="@drawable/cashadvance_btn"
+                android:text="@string/cash_t6"
+                android:textColor="@color/white" />
+
+            <TextView
+                android:id="@+id/textView7"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/cash_button1"
+                android:layout_alignRight="@+id/cash_button1"
+                android:layout_below="@+id/cash_button1"
+                android:layout_marginTop="5dp"
+                android:paddingTop="15dp"
+                android:text="@string/cash_t5"
+                android:textSize="12dp" />
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="1dip"
+                android:layout_alignLeft="@+id/textView5"
+                android:layout_alignRight="@+id/textView6"
+                android:layout_below="@+id/textView6"
+                android:layout_marginTop="5dp"
+                android:background="#d5dee5" />
+        </RelativeLayout>
+    </LinearLayout>
+
+</LinearLayout>

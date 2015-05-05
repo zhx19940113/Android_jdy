@@ -1,0 +1,54 @@
+package com.app.jdy.ui;
+
+import java.io.File;
+
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.text.TextUtils;
+import android.view.KeyEvent;
+import android.widget.Toast;
+
+import com.app.jdy.R;
+import com.app.jdy.utils.URLs;
+
+/**
+ * 
+ * description :
+ * 
+ * @version 1.0
+ * @author zhonghuixiong
+ * @createtime : 2015-1-25 上午12:23:39
+ * 
+ *             修改历史: 修改人 修改时间 修改内容 --------------- -------------------
+ *             ----------------------------------- zhonghuixiong 2015-1-25
+ *             上午12:23:39
+ * 
+ */
+public class JdyActivity extends BaseFragmentActivity {
+
+	private long mExitTime;
+	private FragmentManager fm = getSupportFragmentManager();
+	private FragmentTransaction fragmentTransaction = getSupportFragmentManager()
+			.beginTransaction();
+	@Override
+	protected void onCreate(Bundle arg0) {
+		// TODO Auto-generated method stub
+		super.onCreate(arg0);
+		setContentView(R.layout.mymain);
+		setGuideResourceId(R.drawable.point_golds);
+		fragmentTransaction.replace(R.id.fragmentmain, new MainFragment());
+		fragmentTransaction.commit();
+
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+	}
+}

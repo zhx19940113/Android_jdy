@@ -1,0 +1,23 @@
+package com.app.jdy.utils;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+public class JSONUtils {
+
+	/**
+	 * @param key
+	 *            取值字段名
+	 * @param args
+	 *            默认值
+	 * @throws JSONException
+	 */
+	public static String getString(JSONObject jsonObject, String key, String defValue) throws JSONException {
+		if (jsonObject.optString(key) == null || jsonObject.optString(key).equals("null")||jsonObject.optString(key).equals("")) {
+			return defValue;
+		} else {
+			return jsonObject.optString(key);
+		}
+	}
+
+}

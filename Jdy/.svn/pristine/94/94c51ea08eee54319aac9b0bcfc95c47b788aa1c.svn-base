@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.app.jdy"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <uses-sdk
+        android:minSdkVersion="9"
+        android:targetSdkVersion="19" />
+
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    
+    <!-- 【可选】如果需要设置前台是否显示通知，需要设置这个权限 -->
+    <uses-permission android:name="android.permission.GET_TASKS" />
+
+    <!-- 可选 -->
+    <uses-permission android:name="android.permission.BROADCAST_PACKAGE_ADDED" />
+    <uses-permission android:name="android.permission.BROADCAST_PACKAGE_CHANGED" />
+    <uses-permission android:name="android.permission.BROADCAST_PACKAGE_INSTALL" />
+    <uses-permission android:name="android.permission.BROADCAST_PACKAGE_REPLACED" />
+    <uses-permission android:name="android.permission.RESTART_PACKAGES" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+
+    <application
+        android:name=".context.MyApplication"
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:launchMode="singleTask"
+        android:screenOrientation="portrait"
+        android:theme="@style/AppTheme" >
+        <activity
+            android:name=".ui.StartActivity"
+            android:screenOrientation="portrait" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- MainActivity -->
+        <activity
+            android:name=".activity.MainActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+
+        <!-- HomeActivity -->
+        <activity
+            android:name=".activity.HomeActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+
+        <!-- GoldActivity -->
+        <activity
+            android:name=".activity.GoldActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+
+        <!-- MyActivity -->
+        <activity
+            android:name=".activity.MyActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+
+        <!-- 主界面 -->
+        <activity
+            android:name=".ui.JdyActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <!-- 引导界面 -->
+        <activity
+            android:name=".ui.GuideActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <!-- 登陆界面 -->
+        <activity
+            android:name=".ui.LoginActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <!-- 找回密码界面 -->
+        <activity
+            android:name=".ui.CallBackPasswordActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <!-- 注册界面 -->
+        <activity
+            android:name=".ui.RegirsterActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <!-- 产品详情界面 -->
+        <activity
+            android:name=".ui.DetailActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <!-- 产品详情界面 -->
+        <activity
+            android:name=".ui.DetailProductActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <!-- 我的银行卡界面 -->
+        <activity
+            android:name=".ui.BankCardActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <!-- 添加银行卡界面 -->
+        <activity
+            android:name=".ui.AddBankCardActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <!-- 转发列表 -->
+        <activity
+            android:name=".ui.FollowActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <!-- 提现记录 -->
+        <activity
+            android:name=".ui.MyRecordActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <!-- 我的面值 -->
+        <activity
+            android:name=".ui.FaceValueActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <!-- 我的面子 -->
+        <activity
+            android:name=".ui.MyFaceActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <!-- 我的圈子 -->
+        <activity
+            android:name=".ui.MyCommunityActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <!-- 我的订单 -->
+        <activity
+            android:name=".ui.MyOrderActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <!-- 设置 -->
+        <activity
+            android:name=".ui.SettingActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <!-- 提现 -->
+        <activity
+            android:name=".ui.CashAdvanceActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name=".ui.WxTestActivity"
+            android:label="@string/title_activity_wx_test"
+            android:screenOrientation="portrait" >
+        </activity>
+        <!-- 微信 -->
+        <activity
+            android:name=".wxapi.WXEntryActivity"
+            android:exported="true"
+            android:label="@string/title_activity_wxentry"
+            android:screenOrientation="portrait" >
+        </activity>
+        <!-- 消息列表 -->
+        <activity
+            android:name=".ui.MsgListActivity"
+            android:label="@string/title_activity_msg_list"
+            android:screenOrientation="portrait" >
+        </activity>
+        <!-- 消息详细 -->
+        <activity
+            android:name=".ui.MyMessageDetail"
+            android:screenOrientation="portrait" >
+        </activity>
+        <!-- 消息推送 -->
+        <service android:name=".context.MsgService" >
+            <intent-filter>
+                <action android:name="com.jdy.service.MsgService" />
+            </intent-filter>
+        </service>
+        <!-- 修改密码 -->
+        <activity
+            android:name=".ui.UpdateNameActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <!-- 修改密码 -->
+        <activity
+            android:name=".ui.ChangePasswordActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+
+        <!-- 反馈订单 -->
+        <activity
+            android:name=".ui.OrderFeedBackActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+
+        <!-- 图片选择 -->
+        <activity
+            android:name=".ui.SelectPicActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+
+        <!-- 图片放大 -->
+        <activity
+            android:name=".ui.ImagePagerActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+
+        <!-- 关于我们 -->
+        <activity
+            android:name=".ui.AboutUsActivity"
+            android:hardwareAccelerated="false"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.app.jdy.activity.PictureActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+
+        <!-- 友盟推送相关begin -->
+        <receiver
+            android:name="com.umeng.message.NotificationProxyBroadcastReceiver"
+            android:exported="false" >
+        </receiver>
+        <receiver
+            android:name="com.umeng.message.SystemReceiver"
+            android:process=":push" >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.PACKAGE_REMOVED" />
+
+                <data android:scheme="package" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name="com.umeng.message.MessageReceiver"
+            android:process=":push" >
+            <intent-filter>
+                <action android:name="org.agoo.android.intent.action.RECEIVE" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name="com.umeng.message.ElectionReceiver"
+            android:process=":push" >
+            <intent-filter>
+                <action android:name="org.agoo.android.intent.action.ELECTION_RESULT_V4" />
+
+                <category android:name="umeng" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name="com.umeng.message.RegistrationReceiver"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="com.app.jdy.intent.action.COMMAND" />
+            </intent-filter>
+        </receiver>
+        <receiver android:name="com.umeng.message.BootBroadcastReceiver" >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name="com.umeng.message.UmengService"
+            android:exported="true"
+            android:label="PushService"
+            android:process=":push" >
+            <intent-filter>
+                <action android:name="com.app.jdy.intent.action.START" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="com.app.jdy.intent.action.COCKROACH" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="org.agoo.android.intent.action.PING_V4" />
+
+                <category android:name="umeng" />
+            </intent-filter>
+        </service>
+        <service android:name="com.umeng.message.UmengIntentService" />
+        <!-- V1.3.0添加的service，负责下载通知的资源 -->
+        <service android:name="com.umeng.message.UmengDownloadResourceService" />
+
+        <meta-data
+            android:name="UMENG_APPKEY"
+            android:value="551baef8fd98c51653000573" >
+        </meta-data>
+        <meta-data
+            android:name="UMENG_MESSAGE_SECRET"
+            android:value="db36cab2c5650de8acc21d11ce3f21d3" >
+        </meta-data>
+        <!-- 友盟推送相关end -->
+    </application>
+
+</manifest>

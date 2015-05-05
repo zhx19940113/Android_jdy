@@ -1,0 +1,190 @@
+/**
+ * Copyright (c) 2015
+ *
+ * Licensed under the UCG License, Version 1.0 (the "License");
+ */
+package com.app.jdy.utils;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+
+import com.app.jdy.R;
+
+import android.app.Dialog;
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+
+/**
+ * description :
+ *
+ * @version 1.0
+ * @author zhoufeng
+ * @createtime : 2015-3-15 下午12:18:11
+ * 
+ * 修改历史:
+ * 修改人                                          修改时间                                                     修改内容
+ * --------------- ------------------- -----------------------------------
+ * zhoufeng        2015-3-15 下午12:18:11 
+ *
+ */
+public class DownNewApp{
+
+//	private Dialog downDialog;
+//	private Dialog progressDialog;
+//	/* 进度条与通知ui刷新的handler和msg常量 */
+//	private ProgressBar mProgress;
+//	
+//	public DownNewApp(Context context) {
+//		downDialog = new Dialog(context, R.style.ForwardDialog);
+//		downDialog.setContentView(R.layout.customdown_dialog);
+//		progressDialog = new Dialog(context, R.style.ForwardDialog);
+//		progressDialog.setContentView(R.layout.customdownprogress_dialog);
+//		mProgress = (ProgressBar) progressDialog
+//				.findViewById(R.id.downprogress);
+//	}
+//	
+//	public void showDownMessage(){
+//		/**
+//		 * 下载按钮事件
+//		 */
+//		((ImageView) downDialog.findViewById(R.id.downbutton))
+//				.setOnClickListener(new ImageView.OnClickListener() {
+//					@Override
+//					public void onClick(View v) {
+//						showDownloadDialog();
+//						downDialog.dismiss();
+//					}
+//				});
+//		/**
+//		 * 取消按钮事件
+//		 */
+//
+//		((ImageView) downDialog.findViewById(R.id.customcancle))
+//				.setOnClickListener(new ImageView.OnClickListener() {
+//
+//					@Override
+//					public void onClick(View v) {
+//						downDialog.dismiss();
+//					}
+//				});
+//
+//		((TextView) downDialog.findViewById(R.id.versionDescrition))
+//				.setText(versionDescrition);
+//
+//		downDialog.setCanceledOnTouchOutside(true);
+//		downDialog.show();
+//	}
+//
+//	/**
+//	 * 下载对话框
+//	 */
+//	private void showDownloadDialog() {
+//		progressDialog.show();
+//		((Button) progressDialog.findViewById(R.id.cancleDown))
+//				.setOnClickListener(new Button.OnClickListener() {
+//					@Override
+//					public void onClick(View v) {
+//						progressDialog.dismiss();
+//						interceptFlag = true;
+//					}
+//				});
+//		((TextView) progressDialog.findViewById(R.id.progressVersionDescrition))
+//				.setText(versionDescrition);
+//		downloadApk();
+//	}
+//	/**
+//	 * 下载apk
+//	 * 
+//	 * @param url
+//	 */
+//
+//	private void downloadApk() {
+//		if (HttpUtils.isNetworkConnected(this) == true) {
+//			downLoadThread = new Thread(mdownApkRunnable);
+//			downLoadThread.start();
+//		}
+//	}
+//	
+//	/**
+//	 * 安装apk
+//	 * 
+//	 * @param url
+//	 */
+//	private void installApk() {
+//		File apkfile = new File(saveFileName);
+//		if (!apkfile.exists()) {
+//			return;
+//		}
+//		Intent i = new Intent(Intent.ACTION_VIEW);
+//		i.setDataAndType(Uri.parse("file://" + apkfile.toString()),
+//				"application/vnd.android.package-archive");
+//		startActivity(i);
+//	}
+//
+//	private Runnable mdownApkRunnable = new Runnable() {
+//		@Override
+//		public void run() {
+//			try {
+//				URL url = new URL(apkUrl);
+//
+//				HttpURLConnection conn = (HttpURLConnection) url
+//						.openConnection();
+//				conn.connect();
+//				double length = conn.getContentLength();
+//				progressSize = String
+//						.valueOf(df.format((length / 1024) / 1024));
+//				Log.i("mydebug=======", progressSize);
+//				InputStream is = conn.getInputStream();
+//				handler.sendEmptyMessage(2);
+//				File file = new File(savePath);
+//				if (!file.exists()) {
+//					file.mkdir();
+//				}
+//				String apkFile = saveFileName;
+//				File ApkFile = new File(apkFile);
+//				FileOutputStream fos = new FileOutputStream(ApkFile);
+//
+//				double count = 0;
+//				byte buf[] = new byte[1024];
+//
+//				do {
+//					int numread = is.read(buf);
+//					count += numread;
+//					downProgress = (int) (((float) count / length) * 100);
+//					// 更新进度
+//					handler.sendEmptyMessage(3);
+//					handler.sendEmptyMessage(DOWN_UPDATE);
+//					if (numread <= 0) {
+//						// 下载完成通知安装
+//						handler.sendEmptyMessage(DOWN_OVER);
+//						break;
+//					}
+//					fos.write(buf, 0, numread);
+//				} while (!interceptFlag);// 点击取消就停止下载.
+//				fos.close();
+//				is.close();
+//			} catch (MalformedURLException e) {
+//				e.printStackTrace();
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//			}
+//
+//		}
+//	};
+
+}
+
+	

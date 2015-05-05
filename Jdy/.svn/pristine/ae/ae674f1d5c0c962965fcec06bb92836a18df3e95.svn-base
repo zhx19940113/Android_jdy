@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/my_content_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <include
+        android:id="@+id/titlebar"
+        layout="@layout/title_bar" />
+
+    <FrameLayout
+        android:id="@+id/fragmentmain"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/titlebar" >
+    </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/bottom_button_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="#df46abff"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:padding="5dp" >
+
+        <Button
+            android:id="@+id/super_share"
+            android:layout_width="110dp"
+            android:layout_height="40dp"
+            android:layout_marginRight="30dp"
+            android:background="@drawable/rect_white_right"
+            android:drawableLeft="@drawable/bar_share"
+            android:drawablePadding="0dp"
+            android:text="@string/buy_button"
+            android:textColor="@color/white" />
+
+        <Button
+            android:id="@+id/super_buy"
+            android:layout_width="110dp"
+            android:layout_height="40dp"
+            android:layout_marginLeft="30dp"
+            android:background="@drawable/rect_white_right"
+            android:drawableLeft="@drawable/bar_buy"
+            android:text="@string/share_button"
+            android:textColor="@color/white" />
+    </LinearLayout>
+
+</RelativeLayout>

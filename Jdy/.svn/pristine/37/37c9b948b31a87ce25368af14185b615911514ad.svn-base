@@ -1,0 +1,697 @@
+/**
+ * Copyright (c) 2015
+ *
+ * Licensed under the UCG License, Version 1.0 (the "License");
+ */
+package com.app.jdy.ui;
+
+import java.util.ArrayList;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.text.method.HideReturnsTransformationMethod;
+import android.text.method.PasswordTransformationMethod;
+import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.animation.Animation;
+import android.view.animation.TranslateAnimation;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.app.jdy.R;
+import com.app.jdy.context.MyApplication;
+import com.app.jdy.utils.CommonUtils;
+import com.app.jdy.utils.Constants;
+import com.app.jdy.utils.HttpUtils;
+import com.app.jdy.utils.StringUtils;
+import com.app.jdy.utils.URLs;
+import com.app.jdy.utils.WxCustUtil;
+import com.app.jdy.widget.WaitingDialog;
+import com.nineoldandroids.animation.ObjectAnimator;
+import com.nineoldandroids.animation.PropertyValuesHolder;
+import com.tencent.mm.sdk.openapi.BaseResp;
+import com.tencent.mm.sdk.openapi.ConstantsAPI;
+import com.tencent.mm.sdk.openapi.SendAuth;
+import com.tencent.mm.sdk.openapi.SendAuth.Resp;
+
+/**
+ * description :
+ * 
+ * @version 1.0
+ * @author zhoufeng
+ * @createtime : 2015-1-12 上午10:39:44
+ * 
+ *             修改历史: 修改人 修改时间 修改内容 --------------- -------------------
+ *             ----------------------------------- zhoufeng 2015-1-12 上午10:39:44
+ * 
+ */
+public class RegirsterActivity extends Activity implements OnClickListener {
+	/**
+	 * 返回按钮
+	 */
+	private ImageView mBackImg;
+	/**
+	 * 标题
+	 */
+	private TextView title;
+	/**
+	 * 手机号码的编辑框
+	 */
+	private EditText new_username;
+	/**
+	 * 密码的编辑框
+	 */
+	private EditText new_password;
+	/**
+	 * 密码的textview组件
+	 */
+	// private TextView new_password_message;
+
+	/**
+	 * 验证码的编辑框
+	 */
+	private EditText regirster_code;
+	/**
+	 * 验证码的textview组件
+	 */
+	// private TextView regirster_code_message;
+	/**
+	 * 获取验证码的按钮
+	 */
+	private Button get_regirster_code;
+	/**
+	 * 提交注册的按钮
+	 */
+	private Button sumbit_regirster;
+	/**
+	 * 返回登陆的TextView
+	 */
+	// private TextView back_login;
+	/**
+	 * 60秒的计时数
+	 */
+	private int recLen = 60;
+
+	/**
+	 * 进度条的进度
+	 */
+	private final int PROGRESS_DIALOG = 0x112;
+	/**
+	 * 获取数据成功
+	 */
+	private final int GETSUCC = 4;
+	/**
+	 * 获取数据失败信号
+	 */
+	private final int GETFALL = 0x110;
+	/**
+	 * json数据
+	 */
+	private String dataJson;
+	/**
+	 * 将注册界面的信息数据放入ArrayList发送给服务端的容器
+	 */
+	private ArrayList<NameValuePair> params;
+	/**
+	 * 将验证码手机吗唯一性的信息数据放入ArrayList发送给服务端的容器
+	 */
+	private ArrayList<NameValuePair> phone;
+	private String jdycode;
+	private String ID;// 用户ID号
+	private MyApplication data;// 全局变量
+	public String username;
+	public String password;
+	// private String repassword;
+	public String checkCode;
+	private int animatorStart = 800;// 第一个动画执行时间
+	private String WX_OPENID; // 微信openId
+	private String WX_UNIONID;// 微信UNIONID
+	private Activity mContext; // 上下文
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_regirster);
+		data = (MyApplication) getApplication();
+		// 调用初始化组件方法
+		init();
+
+		// 调用初始化动画方法
+		initAnimation();
+
+		mBackImg.setOnClickListener(this);
+
+		// 获取验证码按钮监听点击事件
+		get_regirster_code.setOnClickListener(this);
+
+		// 注册按钮监听点击事件
+		sumbit_regirster.setOnClickListener(this);
+
+		// 返回登陆界面按钮监听点击事件
+		// back_login.setOnClickListener(this);
+
+		// 监控用户输入的手机号码是否符合操作
+		new_username.addTextChangedListener(watcher);
+
+		// get_regirster_code.setVisibility(View.INVISIBLE);
+		get_regirster_code.setClickable(false);
+		get_regirster_code.setBackgroundResource(R.drawable.regirster_code_false);
+		get_regirster_code.setTextColor(getResources().getColor(R.color.text_hint));
+	}
+
+	@Override
+	protected void onRestart() {
+		super.onRestart();
+		SendAuth.Resp resp = (SendAuth.Resp) data.getSendResp();
+		if (resp != null) {
+			switch (resp.errCode) {
+			case BaseResp.ErrCode.ERR_OK:
+				switch (resp.getType()) {
+				// 授权登陆
+				case ConstantsAPI.COMMAND_SENDAUTH:
+					reqWXAuthRegister(resp);
+					break;
+				// 分享
+				case ConstantsAPI.COMMAND_SENDMESSAGE_TO_WX:
+					break;
+				}
+				break;
+			case BaseResp.ErrCode.ERR_USER_CANCEL:
+				// Toast.makeText(this, R.string.errcode_register_cancel,
+				// Toast.LENGTH_LONG).show();
+				break;
+			case BaseResp.ErrCode.ERR_AUTH_DENIED:
+				// Toast.makeText(this, R.string.errcode_register_cancel,
+				// Toast.LENGTH_LONG).show();
+				break;
+			default:
+				break;
+			}
+		}
+
+	}
+
+	/**
+	 * 微信授权完成后注册方法
+	 * 
+	 * @param resp
+	 */
+	private void reqWXAuthRegister(Resp resp) {
+		String code = resp.token;
+		ReqWXAuthAysnTask task = new ReqWXAuthAysnTask();
+		task.execute(code);
+	}
+
+	/**
+	 * 通过微信code,获取access_token再获取unionId的任务
+	 * 
+	 */
+	private class ReqWXAuthAysnTask extends AsyncTask<String, Integer, Boolean> {
+
+		@Override
+		protected Boolean doInBackground(String... params) {
+			String code = params[0];
+			String ac_url = URLs.WX_ACCESS_TOKEN.replace("CODE", code);
+			String jsonString = HttpUtils.request(null, ac_url);
+			String access_token = null;
+			String openId = null;
+			try {
+				JSONObject jsonObject = new JSONObject(jsonString);
+				access_token = jsonObject.optString("access_token");
+				openId = jsonObject.optString("openid");
+				WX_OPENID = openId;
+
+				String getuser_url = URLs.WX_GETUSERINFO.replace("ACCESS_TOKEN", access_token)
+						.replace("OPENID", openId);
+				String jsonString2 = HttpUtils.request(null, getuser_url);
+				JSONObject jsonObject2 = new JSONObject(jsonString2);
+				WX_UNIONID = jsonObject2.optString("unionid");
+				if (StringUtils.isNotEmpty(WX_UNIONID)) {
+					return true;
+				}
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+			return false;
+		}
+
+		@Override
+		protected void onPostExecute(Boolean result) {
+			if (result) {
+				// 通过微信授权,拿到unionid
+				WaitingDialog.showDialog(RegirsterActivity.this).setText("注册中,请稍候");
+				ReqRegisterTask reqRegisterTask = new ReqRegisterTask();
+				reqRegisterTask.execute();
+			} else {
+				// 没授权
+				Toast.makeText(getApplicationContext(), "对不起,您未通过微信授权,注册失败", Toast.LENGTH_LONG).show();
+			}
+		}
+	}
+
+	private class ReqRegisterTask extends AsyncTask<String, Integer, String> {
+
+		@Override
+		protected String doInBackground(String... paramArgs) {
+			String toastText = "";
+			params = new ArrayList<NameValuePair>();
+			params.add(new BasicNameValuePair("phone", username));
+			params.add(new BasicNameValuePair("password", password));
+			params.add(new BasicNameValuePair("verifyCode", checkCode));
+			params.add(new BasicNameValuePair("wcSDKOpenId", WX_OPENID));
+			params.add(new BasicNameValuePair("unionId", WX_UNIONID));
+
+			dataJson = null;
+			dataJson = HttpUtils.request(params, URLs.REGIRSTER_URL);
+			try {
+				JSONObject dataObj = new JSONObject(dataJson);
+				Boolean regResult = dataObj.optBoolean("success");
+				// 注册成功
+				if (regResult) {
+					toastText = "恭喜,您已通过微信授权,完成注册";
+
+					params.clear();
+					params.add(new BasicNameValuePair("userName", username));
+					params.add(new BasicNameValuePair("password", password));
+					dataJson = null;
+					dataJson = HttpUtils.login(getApplicationContext(), params, URLs.LOGIN_URL, null);
+					JSONObject jsonObject = new JSONObject(dataJson);
+					Boolean loginResult = jsonObject.getBoolean("success");
+					if (loginResult) {
+						jdycode = jsonObject.optJSONObject("attributes").optString("jdycode");
+						String ID = jsonObject.optJSONObject("attributes").optString("ID");
+						saveUserInfo(jdycode, ID);
+						rollLogin();
+						mContext.setResult(2);
+						Intent intent = new Intent("com.app.jdy.sender.ResetMainPage_BroadCast");
+						mContext.sendBroadcast(intent);
+						mContext.finish();
+					} else {
+						toastText = "登录失败";
+					}
+				} else {
+					toastText = "注册失败";
+				}
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+			return toastText;
+		}
+
+		@Override
+		protected void onPostExecute(String result) {
+			WaitingDialog.dismissDialog();
+			Toast.makeText(getApplicationContext(), result, Toast.LENGTH_LONG).show();
+		}
+	}
+
+	private class ToastMessageTask extends AsyncTask<String, String, String> {
+		String toastMessage;
+
+		@Override
+		protected String doInBackground(String... params) {
+			toastMessage = params[0];
+			return toastMessage;
+		}
+
+		// 这是执行在GUI线程context
+		protected void onPostExecute(String result) {
+			Toast toast = Toast.makeText(getApplicationContext(), result, Toast.LENGTH_SHORT);
+			toast.show();
+		}
+	}
+
+	/**
+	 * 
+	 * @author zhoufeng
+	 * @createtime 2015-1-13 下午6:24:12
+	 * @Decription 初始化组件
+	 * 
+	 */
+	boolean pwdShow = false;
+	ImageView pwdEye;
+
+	public void init() {
+		mContext = this;
+		mBackImg = (ImageView) findViewById(R.id.back_img);
+		mBackImg.setVisibility(View.VISIBLE);
+		title = (TextView) findViewById(R.id.title_tv);
+		title.setText("注册");
+		new_username = (EditText) findViewById(R.id.new_username);
+		new_password = (EditText) findViewById(R.id.new_password);
+		regirster_code = (EditText) findViewById(R.id.regirster_code);
+
+		pwdEye = (ImageView) findViewById(R.id.regist_eye);
+		pwdEye.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				if (pwdShow) {
+					new_password.setTransformationMethod(PasswordTransformationMethod.getInstance());
+					pwdEye.setImageResource(R.drawable.register_eye_false);
+				} else {
+					new_password.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+					pwdEye.setImageResource(R.drawable.register_eye);
+				}
+				pwdShow = !pwdShow;
+			}
+		});
+
+		// new_password_message = (TextView)
+		// findViewById(R.id.new_password_message);
+		// new_repassword_message = (TextView)
+		// findViewById(R.id.new_repassword_message);
+		// regirster_code_message = (TextView)
+		// findViewById(R.id.regirster_code_message);
+
+		// back_login = (TextView) findViewById(R.id.back_login);
+		get_regirster_code = (Button) findViewById(R.id.get_regirster_code);
+		get_regirster_code.setBackgroundResource(R.drawable.regirster_code_false);
+		get_regirster_code.setTextColor(getResources().getColor(R.color.text_hint));
+
+		sumbit_regirster = (Button) findViewById(R.id.sumbit_regirster);
+
+	}
+
+	/**
+	 * 
+	 * @author zhoufeng
+	 * @createtime 2015-1-13 下午6:29:17
+	 * @Decription 初始化动画
+	 * 
+	 */
+	public void initAnimation() {
+		// 第一种动画实现
+		PropertyValuesHolder pvh = PropertyValuesHolder.ofFloat("translationY", 3000f, 0f);
+		ObjectAnimator.ofPropertyValuesHolder(get_regirster_code, pvh).setDuration(animatorStart).start();
+		ObjectAnimator.ofPropertyValuesHolder(new_username, pvh).setDuration(animatorStart).start();
+		// 第二种动画实现
+		ObjectAnimator.ofFloat(regirster_code, "translationY", 3000f, 0f).setDuration(animatorStart + 200).start();
+		ObjectAnimator.ofFloat(new_password, "translationY", 3000f, 0f).setDuration(animatorStart + 400).start();
+		ObjectAnimator.ofFloat(pwdEye, "translationY", 3000f, 0f).setDuration(animatorStart + 400).start();
+
+		Animation translateAnimation7 = new TranslateAnimation(0, 0, 3000f, 0f);
+		translateAnimation7.setDuration(animatorStart + 600);// 设置动画持续时间
+		// 第三种动画实现
+		ObjectAnimator.ofFloat(sumbit_regirster, "translationY", 3000f, 0f).setDuration(animatorStart + 800).start();
+	}
+
+	/**
+	 * 监控手机号码是否11位、对其做相应的处理
+	 */
+	TextWatcher watcher = new TextWatcher() {
+		private CharSequence temp;
+
+		@Override
+		public void onTextChanged(CharSequence c, int arg1, int arg2, int arg3) {
+			temp = c;
+		}
+
+		@Override
+		public void beforeTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
+		}
+
+		@Override
+		public void afterTextChanged(Editable arg0) {
+			if (temp.length() == 11) {
+				/**
+				 * 访问服务器，验证该号码是否已经注册
+				 */
+				get_regirster_code.setClickable(true);
+				get_regirster_code.setBackgroundResource(R.drawable.regirster_code);
+				get_regirster_code.setTextColor(getResources().getColor(R.color.title));
+			} else {
+				get_regirster_code.setClickable(false);
+				get_regirster_code.setBackgroundResource(R.drawable.regirster_code_false);
+				get_regirster_code.setTextColor(getResources().getColor(R.color.text_hint));
+			}
+
+		}
+	};
+
+	/**
+	 * 
+	 * 重写方法: onClick|描述:各个组件的点击事件
+	 * 
+	 * @param v
+	 * @see android.view.View.OnClickListener#onClick(android.view.View)
+	 */
+	@Override
+	public void onClick(View v) {
+		switch (v.getId()) {
+		case R.id.back_img:
+			finish();
+			break;
+		case R.id.get_regirster_code:
+			getCheckCode();
+			break;
+		case R.id.sumbit_regirster:
+			clickRegirster();
+			break;
+		case R.id.back_login:
+			startActivity(new Intent(RegirsterActivity.this, LoginActivity.class));
+			break;
+		default:
+			break;
+		}
+	}
+
+	/**
+	 * handler对象
+	 */
+	private Handler handler = new Handler() { // handle
+		public void handleMessage(Message msg) {
+			switch (msg.what) {
+			case 1:
+				JSONObject jsonObject;
+				try {
+					jsonObject = new JSONObject(dataJson);
+					if (jsonObject.getString("success").equals("true")) {
+						Message msg1 = new Message();
+						msg1.what = 4;
+						handler.sendMessage(msg1);
+					} else {
+						Toast.makeText(RegirsterActivity.this, "该号码已经注册", Toast.LENGTH_LONG).show();
+					}
+				} catch (JSONException e1) {
+					e1.printStackTrace();
+				}
+				break;
+			case 2:
+				// pd.dismiss();
+				Toast.makeText(RegirsterActivity.this, Constants.NO_INTENT_TIPS, Toast.LENGTH_LONG).show();
+				break;
+			case 3:
+				recLen--;
+				if (recLen == 0) {
+					get_regirster_code.setText("获取验证码");
+					get_regirster_code.setClickable(true);
+					get_regirster_code.setBackgroundResource(R.drawable.regirster_code);
+					get_regirster_code.setTextColor(getResources().getColor(R.color.title));
+					recLen = 60;
+				} else {
+					get_regirster_code.setBackgroundResource(R.drawable.regirster_code_false);
+					get_regirster_code.setTextColor(getResources().getColor(R.color.text_hint));
+					get_regirster_code.setText(recLen + "秒后重发");
+				}
+				break;
+			case 4:
+				Toast.makeText(RegirsterActivity.this, "获取验证码成功", Toast.LENGTH_LONG).show();
+				/**
+				 * 验证码计时60秒的线程
+				 */
+				Thread thread = new Thread(new Runnable() {
+
+					@Override
+					public void run() {
+						for (int i = 0; i < 60; i++) {
+							try {
+								Thread.sleep(1000); // sleep 1000ms
+								Message message = new Message();
+								message.what = 3;
+								handler.sendMessage(message);
+							} catch (Exception e) {
+							}
+						}
+					}
+				});
+				thread.start();
+				break;
+			}
+		};
+	};
+
+	/**
+	 * 
+	 * @author zhoufeng
+	 * @createtime 2015-1-13 下午1:35:16
+	 * @Decription 点击按钮获取验证码
+	 * 
+	 */
+	public void getCheckCode() {
+
+		get_regirster_code.setClickable(false);
+		get_regirster_code.setBackgroundResource(R.drawable.regirster_code_false);
+		get_regirster_code.setTextColor(getResources().getColor(R.color.text_hint));
+
+		String username = new_username.getText().toString().trim();
+
+		phone = new ArrayList<NameValuePair>();
+		phone.add(new BasicNameValuePair("phone", username));
+		Log.i("aaaa", "phone===" + username);
+
+		/**
+		 * 访问服务端获取验证码的
+		 */
+		Thread code_thread = new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				dataJson = HttpUtils.request(phone, URLs.CHECH_PHONE);
+				Message msg = new Message();
+				if (HttpUtils.isNetworkConnected(mContext)) {
+					msg.what = 1;
+				} else {
+					msg.what = 2;
+				}
+				handler.sendMessage(msg);
+			}
+		});
+		code_thread.start();
+	}
+
+	/**
+	 * 
+	 * @author zhoufeng
+	 * @createtime 2015-1-13 下午11:56:16
+	 * @Decription 判断手机号码唯一性，如果唯一进行获取验证码
+	 * 
+	 */
+	public void getCode() {
+		// pd.dismiss();//关闭ProgressDialog进度条
+		// 注册成功，将用户的uid，sessionid，密码，保存在客户端
+		try {
+			JSONObject jsonObject = new JSONObject(dataJson);
+
+			if (jsonObject.getString("success").equals("true")) {
+				/**
+				 * 开启线程访问服务端
+				 */
+				// Thread thread = new Thread(new Runnable() {
+				//
+				// @Override
+				// public void run() {
+				// dataJson = HttpUtils.request(phone,
+				// URLs.GET_REGIRSTER_CODE_URL);
+				// Log.i("获取验证码的json判断", "datajson===" + dataJson);
+				// Message msg = new Message();
+				// if (dataJson.length() != 0 && !dataJson.equals("0x110")) {
+				// msg.what = GETSUCC;
+				// } else {
+				// msg.what = GETFALL;
+				// }
+				// handler.sendMessage(msg);
+				// }
+				// });
+				// thread.start();
+			} else {
+				Toast.makeText(RegirsterActivity.this, "该号码已经注册", Toast.LENGTH_LONG).show();
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * 
+	 * @author zhoufeng
+	 * @createtime 2015-1-13 下午1:37:57
+	 * @Decription 提交注册
+	 * 
+	 */
+	public void clickRegirster() {
+		username = new_username.getText().toString().trim();
+		password = new_password.getText().toString().trim();
+		checkCode = regirster_code.getText().toString().trim();
+
+		// TODO 这里还要加1个验证码是否通过
+		if (username.equals("") || password.equals("") || checkCode.equals("")) {
+			Toast.makeText(RegirsterActivity.this, "注册信息填写不完整", Toast.LENGTH_SHORT).show();
+		} else if (username.length() != 11) {
+			Toast.makeText(RegirsterActivity.this, "手机号码不正确", Toast.LENGTH_SHORT).show();
+			// } else if (!password.equals(repassword)) {
+			// Toast.makeText(RegirsterActivity.this, "重复密码不一致",
+			// Toast.LENGTH_SHORT).show();
+		} else if (password.length() < 6) {
+			Toast.makeText(RegirsterActivity.this, "密码不能少于6位数", Toast.LENGTH_SHORT).show();
+		} else {
+			// 转到微信授权页面
+			WxCustUtil.SendAuth(this);
+		}
+
+	}
+
+	/**
+	 * 
+	 * @author Owater
+	 * @createtime 2015-1-14 上午1:08:51
+	 * @Decription 轮询登录，维持Android和后台的SSIONID
+	 * 
+	 */
+	public void rollLogin() {
+		final ArrayList<NameValuePair> tmpParams = new ArrayList<NameValuePair>();
+		tmpParams.add(new BasicNameValuePair("jdycode", jdycode));
+		new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				int i = 0;
+				while (true) {
+					i++;
+					try {
+						HttpUtils.login(getApplicationContext(), tmpParams, URLs.LOGIN_URL, jdycode);
+						Log.i("Thread", "轮询次数  == " + i);
+						Thread.sleep(Constants.JSESSIONID_TIME);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}).start();
+	}
+
+	/**
+	 * 
+	 * @author Owater
+	 * @createtime 2015-1-14 上午12:56:54
+	 * @Decription 保存用户信息
+	 * 
+	 */
+	public void saveUserInfo(String jdycode, String ID) {
+		SharedPreferences userPreferences;
+		userPreferences = getSharedPreferences("umeng_general_config", Context.MODE_PRIVATE);
+		Editor editor = userPreferences.edit();
+		editor.putString("jdycode", jdycode);
+		editor.putString("ID", ID);
+		editor.commit();
+	}
+}

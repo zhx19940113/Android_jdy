@@ -1,0 +1,20 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white" >
+
+    <include
+        android:id="@+id/msg_titlebar"
+        layout="@layout/title_bar" />
+
+    <ListView
+        android:id="@+id/msglist_listview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/msg_titlebar"
+        android:background="@color/white"
+        android:cacheColorHint="#00000000"
+        android:listSelector="#0ac8c8c8" />
+
+</RelativeLayout>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:orientation="vertical" >
+
+   <!-- <com.ant.liao.GifView
+        android:id="@+id/gif_commit_loading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="30dp"
+        android:enabled="false" />
+
+     <TextView
+        android:id="@+id/txt_commit_loading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="20dp"
+        android:paddingBottom="10dp"
+        android:text="加载中"
+        android:textColor="#000000"
+        android:textSize="21sp" /> -->
+
+</LinearLayout>

@@ -1,0 +1,769 @@
+package com.app.jdy.activity;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import android.app.Activity;
+import android.app.Dialog;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.app.jdy.R;
+import com.app.jdy.ui.BankCardActivity;
+import com.app.jdy.ui.BaseActivity;
+import com.app.jdy.ui.DetailActivity;
+import com.app.jdy.ui.DetailProductActivity;
+import com.app.jdy.ui.GoldFragment;
+import com.app.jdy.ui.LoginActivity;
+import com.app.jdy.ui.SettingActivity;
+import com.app.jdy.utils.BitmapUtils;
+import com.app.jdy.utils.CommonUtils;
+import com.app.jdy.utils.Constants;
+import com.app.jdy.utils.HttpUtils;
+import com.app.jdy.utils.JSONUtils;
+import com.app.jdy.utils.URLs;
+import com.app.jdy.utils.WxUtil;
+import com.app.jdy.widget.AutoScrollViewPager;
+import com.app.jdy.widget.CustomForwardDialog;
+import com.app.jdy.widget.CustomSaveMoneyDialog;
+import com.app.jdy.widget.ImagePagerAdapter;
+import com.app.jdy.widget.WaitingDialog;
+import com.app.jdy.widget.WithdrawCashDialog;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.slidingmenu.lib.SlidingMenu;
+import com.tencent.mm.sdk.openapi.IWXAPI;
+import com.tencent.mm.sdk.openapi.SendMessageToWX;
+import com.tencent.mm.sdk.openapi.WXAPIFactory;
+import com.tencent.mm.sdk.openapi.WXMediaMessage;
+import com.tencent.mm.sdk.openapi.WXWebpageObject;
+
+/**
+ * 
+ * description :星品Activity
+ * 
+ * @version 1.0
+ * @author zhonghuixiong
+ * @createtime : 2015-3-14 上午12:13:52
+ * 
+ *             修改历史: 修改人 修改时间 修改内容 --------------- -------------------
+ *             ----------------------------------- zhonghuixiong 2015-3-14
+ *             上午12:13:52
+ * 
+ */
+public class HomeActivity extends BaseActivity implements OnClickListener {
+	private AutoScrollViewPager viewPager;
+	private List<View> dots; // 图片标题正文的那些点
+	private List<Bitmap> bitmapList;
+	private Bitmap tempBitmap;
+	private Handler mHandler;
+	/**
+	 * 控制titleBar
+	 */
+	private TextView title_tv;
+	private ImageView back_img;
+	/**
+	 * 产品ID号
+	 */
+	private String id;
+	/**
+	 * 产品类型
+	 */
+	private String code;
+	/**
+	 * 产品名称
+	 */
+	private String name;
+	/**
+	 * 微信API
+	 */
+	private IWXAPI api;
+	private String shareSubject;
+	private String productSubject;
+	/**
+	 * 星品的数据
+	 */
+	private String dataJson;
+	/**
+	 * json对象
+	 */
+	private JSONObject jsonObject;;
+	
+	private TextView super_name;
+	private TextView super_introduction;
+	private TextView super_expeAnnuRevnue;
+	private TextView super_issuer;
+	private Button super_buy;
+	private Button super_share;
+	private LinearLayout goto_detail_activity;
+
+	/**
+	 * 版本号
+	 */
+	private String versionString;
+	private String tempVersionString;
+	/**
+	 * 版本描述
+	 */
+	private String versionDescrition;
+	/**
+	 * 是否有更新标示
+	 */
+	private Boolean flagBoolean = false;
+	/**
+	 * 是否有新版本可以下载
+	 */
+	private Boolean isDown = false;
+
+	private RelativeLayout about_us;
+	
+	private String versionJson;
+	private JSONObject versionJsonObject;
+	
+	private Dialog downDialog;
+	private Dialog progressDialog;
+	// 返回的安装包url
+		private String apkUrl = URLs.GETNEWAPK;
+	/* 下载包安装路径 */
+	private static final String savePath = "/sdcard/JdyUpdate/";
+	private static final String saveFileName = savePath + "JdyUpdate.apk";
+	/**
+	 * 下载文件大小
+	 */
+	private String progressSize;
+	private DecimalFormat df;
+	/* 进度条与通知ui刷新的handler和msg常量 */
+	private ProgressBar mProgress;
+	/**
+	 * 下载进度
+	 */
+	private int downProgress;
+	private static final int DOWN_UPDATE =6;
+
+	private static final int DOWN_OVER = 7;
+	
+	/**
+	 * 判断停止下载
+	 */
+	private boolean interceptFlag = false;
+	/**
+	 * 下载线程
+	 */
+	private Thread downLoadThread;
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_home);
+		setGuideResourceId(R.drawable.point_home);
+		initView();
+		
+		initMainImage();
+		
+		getData();//获取服务端数据
+		
+		versionString = getVersion();
+		
+		checkNewVersion();
+		
+		super_buy.setOnClickListener(this);
+		super_share.setOnClickListener(this);
+		goto_detail_activity.setOnClickListener(this);
+		
+		mHandler = new Handler() {
+			public void handleMessage(Message msg) {
+				switch (msg.what) {
+				case 0:
+					viewPager.setAdapter(new ImagePagerAdapter(
+							HomeActivity.this, bitmapList)
+							.setInfiniteLoop(true));
+					viewPager
+							.setOnPageChangeListener(new MyOnPageChangeListener());
+					// 设置间隔时间
+					viewPager.setInterval(2000);
+					// 设置自动滚动
+					viewPager.startAutoScroll();
+					// 要无限循环必须使用Integer
+					viewPager.setCurrentItem(Integer.MAX_VALUE / 2
+							- Integer.MAX_VALUE / 2 % bitmapList.size());
+					break;
+				case 1:
+					Toast.makeText(HomeActivity.this, Constants.NO_INTENT_TIPS,
+							Toast.LENGTH_LONG).show();
+					WaitingDialog.dismissDialog();
+					break;
+				case 2:
+					setData();
+					WaitingDialog.dismissDialog();
+					break;
+				case 3:
+					if (CommonUtils.CompareVersion(tempVersionString, versionString)) {
+						showDownMessage();
+						isDown = true;
+					} else {
+						isDown = false;
+					}
+					break;
+				case 4:
+					((TextView) progressDialog.findViewById(R.id.progressSize))
+					.setText("共" + progressSize + "M");
+					break;
+				case 5:
+					((TextView) progressDialog.findViewById(R.id.progressRate))
+					.setText(String.valueOf(downProgress) + "%");
+					break;
+				case DOWN_UPDATE:
+					mProgress.setProgress(downProgress);
+					break;
+				case DOWN_OVER:
+					progressDialog.dismiss();
+					installApk();
+					break;
+				default:
+					break;
+				}
+			}
+		};
+	}
+	/**
+	 * 
+	 * @author zhoufeng
+	 * @createtime 2015-3-15 下午2:11:17
+	 * @Decription 初始化界面
+	 *
+	 */
+	public void initView(){
+		/**
+		 * 加载进度条
+		 */
+		WaitingDialog.showDialog(HomeActivity.this);
+		/**
+		 * 控制titleBar
+		 */
+		
+		df = new DecimalFormat("0.00");
+		downDialog = new Dialog(this, R.style.ForwardDialog);
+		downDialog.setContentView(R.layout.customdown_dialog);
+		progressDialog = new Dialog(this, R.style.ForwardDialog);
+		progressDialog.setContentView(R.layout.customdownprogress_dialog);
+		mProgress = (ProgressBar) progressDialog
+				.findViewById(R.id.downprogress);
+		
+		title_tv = (TextView) findViewById(R.id.title_tv);
+		back_img = (ImageView) findViewById(R.id.back_img);
+		super_name = (TextView) findViewById(R.id.super_name);
+		super_introduction = (TextView) findViewById(R.id.super_introduction);
+		super_expeAnnuRevnue = (TextView) findViewById(R.id.super_expeAnnuRevnue);
+		super_issuer = (TextView) findViewById(R.id.super_issuer);
+		super_buy = (Button) findViewById(R.id.super_buy);
+		super_share = (Button) findViewById(R.id.super_share);
+		goto_detail_activity = (LinearLayout) findViewById(R.id.goto_detail_activity);
+		api = WXAPIFactory.createWXAPI(this, Constants.APP_ID);
+		title_tv.setText("星品");
+		back_img.setVisibility(View.INVISIBLE);
+	}
+	/**
+	 * 
+	 * @author zhoufeng
+	 * @createtime 2015-3-15 下午2:11:30
+	 * @Decription 初始化首页图片轮播
+	 *
+	 */
+	public void initMainImage(){
+		/**
+		 * 图片轮播
+		 */
+		dots = new ArrayList<View>();
+		dots.add(findViewById(R.id.v_dot0));
+		dots.add(findViewById(R.id.v_dot1));
+
+		viewPager = (AutoScrollViewPager) findViewById(R.id.home_view_pager);
+		bitmapList = new ArrayList<Bitmap>();
+		Thread thread = new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				bitmapList.add(ImageLoader.getInstance().loadImageSync(URLs.DOWNBITMAP_URL + "1"));
+				bitmapList.add(ImageLoader.getInstance().loadImageSync(URLs.DOWNBITMAP_URL + "2"));
+//				tempBitmap = BitmapUtils.getBitmap(URLs.DOWNBITMAP_URL + "1",
+//						URLs.TEMP_DIR + File.separator + "ad1.jpg",
+//						HomeActivity.this);
+//				tempBitmap = BitmapUtils.getBitmap(URLs.DOWNBITMAP_URL + "2",
+//						URLs.TEMP_DIR + File.separator + "ad2.jpg",
+//						HomeActivity.this);
+				mHandler.sendEmptyMessage(0);
+			}
+		});
+		thread.start();
+	}
+	/**
+	 * 
+	 * @author zhoufeng
+	 * @createtime 2015-3-15 下午2:11:52
+	 * @Decription 获取服务端数据
+	 *
+	 */
+	public void getData(){
+		Thread thread = new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				Message msg = new Message();
+				dataJson = HttpUtils.request(null, URLs.SUPERPRODUCT);
+				if (HttpUtils.isReqSuccess(dataJson)) {
+					msg.what = 2;
+				}else{
+					msg.what = 1;
+				}
+				mHandler.sendMessage(msg);
+			}
+		});
+		thread.start();
+	}
+	/**
+	 * 
+	 * @author zhoufeng
+	 * @createtime 2015-3-15 下午2:12:03
+	 * @Decription 填充数据
+	 *
+	 */
+	public void setData(){
+		try {
+			jsonObject = new JSONObject(dataJson);
+			super_name.setText(JSONUtils.getString(jsonObject, "name", ""));
+			super_introduction.setText(JSONUtils.getString(jsonObject,
+					"shareSubject", ""));
+			super_expeAnnuRevnue.setText(JSONUtils.getString(jsonObject,
+					"expeAnnuRevnue", "0.00")+"%");
+			super_issuer.setText("资金账号安全由"+JSONUtils.getString(jsonObject,
+					"issuer", "未知")+"全额担保");
+			id = JSONUtils.getString(jsonObject,"ID", null);
+			code = JSONUtils.getString(jsonObject,"prodTypeCode", null);
+			name = JSONUtils.getString(jsonObject,"name", "未命名");
+			shareSubject = JSONUtils.getString(jsonObject,"shareSubject", "");
+			productSubject = JSONUtils.getString(jsonObject,"productSubject", "");
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
+	/**
+	 * 
+	 * @author zhoufeng
+	 * @createtime 2015-3-14 下午11:01:22
+	 * @Decription 弹出省钱对话框
+	 *
+	 */
+	private void showBuyDialog() {
+		if (CommonUtils.checkLogin(this)) {
+			SharedPreferences userPreferences = getSharedPreferences("umeng_general_config", Context.MODE_PRIVATE);
+			String memberID = userPreferences.getString("ID", "").trim();
+			Map<String, String> map = new HashMap<String, String>();
+			map.put("ID", id);
+			map.put("memberId", memberID);
+			CustomSaveMoneyDialog customSaveMoneyDialog = new CustomSaveMoneyDialog(this, R.style.ForwardDialog, map);
+			customSaveMoneyDialog.show();
+		} else {
+			startActivity(new Intent(HomeActivity.this, LoginActivity.class));
+		}
+	}
+	
+	/**
+	 * 
+	 * @author zhoufeng
+	 * @createtime 2015-3-14 下午11:09:58
+	 * @Decription 微信发送
+	 *
+	 * @param rid
+	 */
+	private void sendUrl(String rid) {
+		WXWebpageObject webpage = new WXWebpageObject();
+		webpage.webpageUrl = URLs.WX_SHARE_RESULT_URL + "/" + id + "-" + code + "-" + rid;
+		// Log.i("url", URLs.WX_SHARE_RESULT_URL+"/"+id+"-"+code+"-"+rid);
+//		Toast.makeText(HomeActivity.this, URLs.WX_SHARE_RESULT_URL + "/" + id + "-" + code + "-" + rid,
+//				Toast.LENGTH_LONG).show();
+		WXMediaMessage msg = new WXMediaMessage(webpage);
+		msg.title = name;
+		msg.description = "产品描述";
+		Bitmap thumb = BitmapFactory.decodeResource(getResources(), R.drawable.test2);
+		msg.thumbData = WxUtil.bmpToByteArray(thumb, true);
+
+		SendMessageToWX.Req req = new SendMessageToWX.Req();
+		req.transaction = buildTransaction("webpage");
+		req.message = msg;
+		// req.scene = isTimelineCb.isChecked() ?
+		// SendMessageToWX.Req.WXSceneTimeline :
+		// SendMessageToWX.Req.WXSceneSession;
+		req.scene = SendMessageToWX.Req.WXSceneTimeline;
+		api.sendReq(req);
+	}
+	
+
+	private String buildTransaction(final String type) {
+		return (type == null) ? String.valueOf(System.currentTimeMillis()) : type + System.currentTimeMillis();
+	}
+
+	@Override
+	public void onClick(View v) {
+		switch (v.getId()) {
+		case R.id.super_buy:
+			showBuyDialog();
+			break;
+		case R.id.super_share:
+			shareDetail();
+			break;
+		case R.id.goto_detail_activity:
+			Intent intent = new Intent(this,DetailProductActivity.class);
+			Bundle bundle = new Bundle();
+			bundle.putString("ID",id);
+			bundle.putString("prodTypeCode",code);
+			bundle.putString("imageString",CommonUtils.TypeforCode(code));
+			intent.putExtras(bundle);
+			startActivity(intent);
+			break;
+		}
+	}
+
+	public class MyOnPageChangeListener implements OnPageChangeListener {
+		private int oldPosition = 0;
+
+		@Override
+		public void onPageSelected(int position) {
+			// 设置一个局部变量将 点和数量的值获取到
+			int realPostion = position % bitmapList.size();
+			// tv_title.setText(titles[position]);
+			dots.get(oldPosition).setBackgroundResource(R.drawable.dot_normal);
+			dots.get(realPostion).setBackgroundResource(R.drawable.dot_focused);
+			oldPosition = realPostion;
+		}
+
+		@Override
+		public void onPageScrolled(int position, float positionOffset,
+				int positionOffsetPixels) {
+		}
+
+		@Override
+		public void onPageScrollStateChanged(int arg0) {
+		}
+	}
+	/**
+	 * 
+	 * @author zhoufeng
+	 * @createtime 2015-1-22 上午1:59:43
+	 * @Decription 获取用户的memberId，产品的code和产品的ID号进行分享
+	 * 
+	 */
+	public void shareDetail() {
+		SharedPreferences userPreferences = getSharedPreferences("umeng_general_config", Context.MODE_PRIVATE);
+		String jdycode = userPreferences.getString("jdycode", null);
+		// 进行判断用户是否已经登录，没登陆返回登录界面，有登陆可以操作分享的功能
+
+		if (jdycode != null) {
+			String memberID = userPreferences.getString("ID", "").trim();
+			// memberID : 用户的memberId;
+			// code 产品的code
+			// id 产品的ID号
+			new MyAsyncTask(id, memberID, code).execute();
+			Map<String, String> map = new HashMap<String, String>();
+			map.put("name", "test");
+			map.put("ID", id);
+			map.put("prodTypeCode", code);
+			map.put("memberId", memberID);
+			map.put("shareSubject", shareSubject);
+			map.put("productSubject", productSubject);
+			CustomForwardDialog customForwardDialog = new CustomForwardDialog(this, R.style.ForwardDialog, map, false);
+			customForwardDialog.show();
+		} else {
+			startActivity(new Intent(HomeActivity.this, LoginActivity.class));
+		}
+
+	}
+	
+	/**
+	 * 
+	 * description : 异步网络请求
+	 * 
+	 * @version 1.0
+	 * @author Owater
+	 * @createtime : 2015-1-20 上午4:22:27
+	 * 
+	 *             修改历史: 修改人 修改时间 修改内容 --------------- -------------------
+	 *             ----------------------------------- Owater 2015-1-20
+	 *             上午4:22:27
+	 * 
+	 */
+	private class MyAsyncTask extends AsyncTask<Void, Integer, Boolean> {
+
+		private ArrayList<NameValuePair> params;
+		private String resultid;
+		private String memberId;// 会员ID
+		private String productId;// 产品ID
+		private String type;// 产品类型
+
+		public MyAsyncTask(String productId, String memberId, String type) {
+			this.memberId = memberId;
+			this.type = type;
+			this.productId = productId;
+		}
+
+		@Override
+		protected Boolean doInBackground(Void... arg0) {
+			params = new ArrayList<NameValuePair>();
+			params.add(new BasicNameValuePair("parentId", ""));
+			params.add(new BasicNameValuePair("productId", productId));
+			params.add(new BasicNameValuePair("memberId", memberId));
+			resultid = HttpUtils.request(params, URLs.WX_SHARE_URL);
+			try {
+				JSONObject jsonObject = new JSONObject(resultid);
+				resultid = jsonObject.getString("ID");
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return true;
+		}
+
+		@Override
+		protected void onPostExecute(Boolean result) {
+			if (result) {
+//				Toast.makeText(HomeActivity.this, "resultid=" + resultid, Toast.LENGTH_LONG).show();
+				sendUrl(resultid);
+			} else {
+				// Toast.makeText(HomeActivity.this, "网络请求失败",
+				// Toast.LENGTH_SHORT).show();
+			}
+		}
+
+	}
+	
+	/**
+	 * 获取版本号
+	 * 
+	 * @return 当前应用的版本号
+	 */
+	public String getVersion() {
+		try {
+			PackageManager manager = getPackageManager();
+			PackageInfo info = manager.getPackageInfo(getPackageName(), 0);
+			String version = info.versionName;
+			return version;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "没有发现新版本";
+		}
+	}
+	/**
+	 * 检查更新
+	 */
+	public void checkNewVersion() {
+		Thread thread = new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				Message msg = new Message();
+				if (HttpUtils.isNetworkConnected(HomeActivity.this) == true) {
+					versionJson = HttpUtils.request(null, URLs.GETNEWAPKVERSION);
+					if (versionJson.length() != 0 && !versionJson.equals("0x110")) {
+						try {
+							versionJsonObject = new JSONObject(versionJson);
+							if (versionJsonObject.getString("versionNumber").equals("null")) {
+								tempVersionString = "0.0";
+							} else {
+								tempVersionString = versionJsonObject.getString("versionNumber");
+							}
+							if (versionJsonObject.getString("versionDescrition").equals("null")) {
+								versionDescrition = "";
+							} else {
+								versionDescrition = versionJsonObject.getString("versionDescrition");
+							}
+							msg.what = 3;
+						} catch (Exception e) {
+							// TODO: handle exception
+						}
+
+					} else {
+						msg.what = 1;
+					}
+				} else {
+					msg.what = 1;
+				}
+				mHandler.sendMessage(msg);
+			}
+		});
+		thread.start();
+	}
+	/**
+	 * 安装apk
+	 * 
+	 * @param url
+	 */
+	private void installApk() {
+		File apkfile = new File(saveFileName);
+		if (!apkfile.exists()) {
+			return;
+		}
+		Intent i = new Intent(Intent.ACTION_VIEW);
+		i.setDataAndType(Uri.parse("file://" + apkfile.toString()),
+				"application/vnd.android.package-archive");
+		startActivity(i);
+	}
+
+	private Runnable mdownApkRunnable = new Runnable() {
+		@Override
+		public void run() {
+			try {
+				URL url = new URL(apkUrl);
+
+				HttpURLConnection conn = (HttpURLConnection) url
+						.openConnection();
+				conn.connect();
+				double length = conn.getContentLength();
+				progressSize = String
+						.valueOf(df.format((length / 1024) / 1024));
+				Log.i("mydebug=======", progressSize);
+				InputStream is = conn.getInputStream();
+				mHandler.sendEmptyMessage(4);
+				File file = new File(savePath);
+				if (!file.exists()) {
+					file.mkdir();
+				}
+				String apkFile = saveFileName;
+				File ApkFile = new File(apkFile);
+				FileOutputStream fos = new FileOutputStream(ApkFile);
+
+				double count = 0;
+				byte buf[] = new byte[1024];
+
+				do {
+					int numread = is.read(buf);
+					count += numread;
+					downProgress = (int) (((float) count / length) * 100);
+					// 更新进度
+					mHandler.sendEmptyMessage(5);
+					mHandler.sendEmptyMessage(DOWN_UPDATE);
+					if (numread <= 0) {
+						// 下载完成通知安装
+						mHandler.sendEmptyMessage(DOWN_OVER);
+						break;
+					}
+					fos.write(buf, 0, numread);
+				} while (!interceptFlag);// 点击取消就停止下载.
+				fos.close();
+				is.close();
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+		}
+	};
+
+	/**
+	 * 下载apk
+	 * 
+	 * @param url
+	 */
+
+	private void downloadApk() {
+		if (HttpUtils.isNetworkConnected(this) == true) {
+			downLoadThread = new Thread(mdownApkRunnable);
+			downLoadThread.start();
+		}
+	}
+
+	/**
+	 * 
+	 * @author zhonghuixiong
+	 * @createtime 2015-2-5 下午2:06:17
+	 * @Decription 下载对话框
+	 * 
+	 */
+	private void showDownMessage() {
+		/**
+		 * 下载按钮事件
+		 */
+		((Button) downDialog.findViewById(R.id.downbutton))
+				.setOnClickListener(new ImageView.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						showDownloadDialog();
+						downDialog.dismiss();
+					}
+				});
+		/**
+		 * 取消按钮事件
+		 */
+
+		((ImageView) downDialog.findViewById(R.id.customcancle))
+				.setOnClickListener(new ImageView.OnClickListener() {
+
+					@Override
+					public void onClick(View v) {
+						downDialog.dismiss();
+					}
+				});
+
+		((TextView) downDialog.findViewById(R.id.versionDescrition))
+				.setText(versionDescrition);
+
+		downDialog.setCanceledOnTouchOutside(true);
+		downDialog.show();
+	}
+
+	/**
+	 * 下载对话框
+	 */
+	private void showDownloadDialog() {
+		progressDialog.show();
+		((Button) progressDialog.findViewById(R.id.cancleDown))
+				.setOnClickListener(new Button.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						progressDialog.dismiss();
+						interceptFlag = true;
+					}
+				});
+		((TextView) progressDialog.findViewById(R.id.progressVersionDescrition))
+				.setText(versionDescrition);
+		downloadApk();
+	}
+}

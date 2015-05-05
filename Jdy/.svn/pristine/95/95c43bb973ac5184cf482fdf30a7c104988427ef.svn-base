@@ -1,0 +1,411 @@
+package com.app.jdy.entity;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.Date;
+
+/**
+ * @Title: Entity
+ * @Description: 产品信息总表
+ * @author ccw
+ * @date 2015-01-10 13:07:30
+ * @version V1.0
+ * 
+ */
+public class ProductEntity implements Serializable {
+	/** 产品ID */
+	private String ID;
+	/** 产品名称 */
+	private String name;
+	/** 分享主题 */
+	private String shareSubject;
+	/** 发行方类型 */
+	private String issuerType;
+	/** 发行方 */
+	private String issuer;
+	/** 发行方logo */
+	private String issuerLogo;
+	/** 产品图片 */
+	private String prodImage;
+	/** 收益类型 */
+	private String profitType;
+	/** 币种 */
+	private String currencyType;
+	/** 产品状态 */
+	private String status;
+	/** 销售结束日期 */
+	private Date saleEnd;
+	/** 销售开始日期 */
+	private Date saleStart;
+	/** 收益结束日期 */
+	private Date profitEnd;
+	/** 收益开始日期 */
+	private Date profitStart;
+	/** 明细类型 */
+	private String detailType;
+	/** 最低认购金额&起购金额 */
+	private String minSubsAmount;
+	/** 预期年化收益 */
+	private String expeAnnuRevnue;
+	/** 产品详情 */
+	private String prodDetail;
+	/** 申购须知&风险提示 */
+	private String notice;
+	/** 机构介绍 */
+	private String orgIntro;
+	/** 期限 */
+	private Integer period;
+	private String productSubject;
+	/**
+	 * 委托金额递增单位
+	 */
+	private String entrustIncrease;
+	/**
+	 * 续存期
+	 */
+	private String duration;
+	/** 保险类型 */
+	private String insuranceType;
+	/**
+	 * 期限
+	 */
+	private int ensurePeriod;
+	/**
+	 * 管理人
+	 */
+	private String manager;
+	/** 基金管理人 */
+	private String fundDirector;
+	/** 基金类型 */
+	private String fundType;
+	
+	private String proType;//产品类型(用于产品标识图标的textview显示)
+
+	public String getProductSubject() {
+		return productSubject;
+	}
+
+	public void setProductSubject(String productSubject) {
+		this.productSubject = productSubject;
+	}
+
+	public String getEntrustIncrease() {
+		return entrustIncrease;
+	}
+
+	public void setEntrustIncrease(String entrustIncrease) {
+		this.entrustIncrease = entrustIncrease;
+	}
+
+	public String getDuration() {
+		return duration;
+	}
+
+	public void setDuration(String duration) {
+		this.duration = duration;
+	}
+
+	public int getEnsurePeriod() {
+		return ensurePeriod;
+	}
+
+	public void setEnsurePeriod(int ensurePeriod) {
+		this.ensurePeriod = ensurePeriod;
+	}
+
+	public String getManager() {
+		return manager;
+	}
+
+	public void setManager(String manager) {
+		this.manager = manager;
+	}
+
+	/** 库存 */
+	private Integer stock;
+	/** 投资方向 */
+	private String investDirection;
+	/** 参考最高收益 */
+	private String topGain;
+	/** 产品类型名称 */
+	private String prodTypeName;
+	/** 产品类型code */
+	private String prodTypeCode;
+	/**
+	 * 发布状态 0表示草稿状态可修改 1表示已发布状态不可修改只有当审核不通过才可修改
+	 * */
+	private Integer publishState;
+	/**
+	 * 审核状态 0未审核状态 1审核通过 2审核不通过
+	 */
+	private Integer checkState;
+	/**
+	 * 审核意见
+	 */
+	private String checkOpinion;
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getIssuerType() {
+		return issuerType;
+	}
+
+	public void setIssuerType(String issuerType) {
+		this.issuerType = issuerType;
+	}
+
+	public String getIssuer() {
+		return issuer;
+	}
+
+	public void setIssuer(String issuer) {
+		this.issuer = issuer;
+	}
+
+	public String getIssuerLogo() {
+		return issuerLogo;
+	}
+
+	public void setIssuerLogo(String issuerLogo) {
+		this.issuerLogo = issuerLogo;
+	}
+
+	public String getProdImage() {
+		return prodImage;
+	}
+
+	public void setProdImage(String prodImage) {
+		this.prodImage = prodImage;
+	}
+
+	public String getProfitType() {
+		return profitType;
+	}
+
+	public void setProfitType(String profitType) {
+		this.profitType = profitType;
+	}
+
+	public String getCurrencyType() {
+		return currencyType;
+	}
+
+	public void setCurrencyType(String currencyType) {
+		this.currencyType = currencyType;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public Date getSaleEnd() {
+		return saleEnd;
+	}
+
+	public void setSaleEnd(Date saleEnd) {
+		this.saleEnd = saleEnd;
+	}
+
+	public Date getSaleStart() {
+		return saleStart;
+	}
+
+	public void setSaleStart(Date saleStart) {
+		this.saleStart = saleStart;
+	}
+
+	public Date getProfitEnd() {
+		return profitEnd;
+	}
+
+	public void setProfitEnd(Date profitEnd) {
+		this.profitEnd = profitEnd;
+	}
+
+	public Date getProfitStart() {
+		return profitStart;
+	}
+
+	public void setProfitStart(Date profitStart) {
+		this.profitStart = profitStart;
+	}
+
+	public String getDetailType() {
+		return detailType;
+	}
+
+	public void setDetailType(String detailType) {
+		this.detailType = detailType;
+	}
+
+	public String getMinSubsAmount() {
+		return minSubsAmount;
+	}
+
+	public void setMinSubsAmount(String minSubsAmount) {
+		this.minSubsAmount = minSubsAmount;
+	}
+
+	public String getID() {
+		return ID;
+	}
+
+	public void setID(String iD) {
+		ID = iD;
+	}
+
+	public String getExpeAnnuRevnue() {
+		return expeAnnuRevnue;
+	}
+
+	public void setExpeAnnuRevnue(String expeAnnuRevnue) {
+		this.expeAnnuRevnue = expeAnnuRevnue;
+	}
+
+	public String getProdDetail() {
+		return prodDetail;
+	}
+
+	public void setProdDetail(String prodDetail) {
+		this.prodDetail = prodDetail;
+	}
+
+	public String getNotice() {
+		return notice;
+	}
+
+	public void setNotice(String notice) {
+		this.notice = notice;
+	}
+
+	public String getOrgIntro() {
+		return orgIntro;
+	}
+
+	public void setOrgIntro(String orgIntro) {
+		this.orgIntro = orgIntro;
+	}
+
+	public Integer getPeriod() {
+		return period;
+	}
+
+	public void setPeriod(Integer period) {
+		this.period = period;
+	}
+
+	public String getInsuranceType() {
+		return insuranceType;
+	}
+
+	public void setInsuranceType(String insuranceType) {
+		this.insuranceType = insuranceType;
+	}
+
+	public String getFundDirector() {
+		return fundDirector;
+	}
+
+	public void setFundDirector(String fundDirector) {
+		this.fundDirector = fundDirector;
+	}
+
+	public String getFundType() {
+		return fundType;
+	}
+
+	public void setFundType(String fundType) {
+		this.fundType = fundType;
+	}
+
+	public Integer getStock() {
+		return stock;
+	}
+
+	public void setStock(Integer stock) {
+		this.stock = stock;
+	}
+
+	public String getInvestDirection() {
+		return investDirection;
+	}
+
+	public void setInvestDirection(String investDirection) {
+		this.investDirection = investDirection;
+	}
+
+	public String getTopGain() {
+		return topGain;
+	}
+
+	public void setTopGain(String topGain) {
+		this.topGain = topGain;
+	}
+
+	public String getProdTypeName() {
+		return prodTypeName;
+	}
+
+	public void setProdTypeName(String prodTypeName) {
+		this.prodTypeName = prodTypeName;
+	}
+
+	public String getProdTypeCode() {
+		return prodTypeCode;
+	}
+
+	public void setProdTypeCode(String prodTypeCode) {
+		this.prodTypeCode = prodTypeCode;
+	}
+
+	public Integer getPublishState() {
+		return publishState;
+	}
+
+	public void setPublishState(Integer publishState) {
+		this.publishState = publishState;
+	}
+
+	public Integer getCheckState() {
+		return checkState;
+	}
+
+	public void setCheckState(Integer checkState) {
+		this.checkState = checkState;
+	}
+
+	public String getShareSubject() {
+		return shareSubject;
+	}
+
+	public void setShareSubject(String shareSubject) {
+		this.shareSubject = shareSubject;
+	}
+
+	public String getCheckOpinion() {
+		return checkOpinion;
+	}
+
+	public void setCheckOpinion(String checkOpinion) {
+		this.checkOpinion = checkOpinion;
+	}
+
+	public String getProType() {
+		return proType;
+	}
+
+	public void setProType(String proType) {
+		this.proType = proType;
+	}
+
+}
