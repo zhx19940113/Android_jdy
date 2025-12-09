@@ -72,10 +72,6 @@ public class GoldActivity extends BaseActivity implements OnClickListener {
 	private TextView title_tv;
 	// 搜索按钮
 	private ImageView right_img;
-
-	/**
-	 * 根据不同的类型传参拿json
-	 */
 	// 分类搜索字符串
 	private String search_ProdType;
 	// 模糊搜索关键字
